@@ -3,7 +3,7 @@ import json
 
 def handler(event, context):
     print(f"Event: {json.dumps(event)}")
-    # polling lambda
+    #  analysis trading lambda
     return {
         "statusCode": 200,
         "body": json.dumps({"message": "OK"}),
