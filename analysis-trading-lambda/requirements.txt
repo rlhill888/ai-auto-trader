@@ -1,0 +1,3 @@
+openai
+requests
+pg8000
