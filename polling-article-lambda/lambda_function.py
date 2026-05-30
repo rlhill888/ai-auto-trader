@@ -7,7 +7,9 @@ from botocore.exceptions import ClientError
 
 
 ARTICLE_TABLE_NAME = os.environ["ARTICLE_TABLE_NAME"]
+QUEUE_URL = os.environ["ANALYSIS_QUEUE_URL"]
 dynamodb = boto3.resource("dynamodb")
+sqs = boto3.client("sqs")
 table = dynamodb.Table(ARTICLE_TABLE_NAME)
 
 
@@ -25,23 +27,33 @@ def lambda_handler(event, context):
 
         for index, entry in enumerate(feed.entries):
             article = {
+                "id": entry.get("id"),
                 "title": entry.get("title"),
                 "link": entry.get("link"),
                 "published": entry.get("published"),
                 "summary": entry.get("summary"),
-                "id": entry.get("id"),
+                "tags": entry.get("tags")
             }
 
             try:
                 table.put_item(
                     Item={
-                        "article-id": article["id"],
+                        "article-id": entry["id"],
+                        **article,
                     },
                     ConditionExpression="attribute_not_exists(#id)",
                     ExpressionAttributeNames={"#id": "article-id"},
                 )
+
                 print(f"Article {index}: {json.dumps(article)}")
                 print(f"Saved article {index} to DynamoDB")
+
+                sqs.send_message(
+                    QueueUrl=QUEUE_URL,
+                    MessageBody=json.dumps({"article": article}),
+                )
+                print(f"Sent article {index} to queue")
+
             except ClientError as e:
                 if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
                     print(f"Article {index} already exists, skipping")
