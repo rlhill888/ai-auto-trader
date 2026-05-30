@@ -15,6 +15,7 @@ def lambda_handler(event, context):
         print(response)
 
         feed = feedparser.parse(response.text)
+        print(response.text)
 
         for index, entry in feed.entries:
             article = {
