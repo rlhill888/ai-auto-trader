@@ -12,7 +12,6 @@ def lambda_handler(event, context):
         print(f"Received response with status code {response.status_code}")
         response.raise_for_status()
         print("Parsing RSS feed")
-        print(response)
 
         feed = feedparser.parse(response.text)
         print(response.text)
