@@ -3,7 +3,7 @@ import requests
 import feedparser
 
 
-def handler(event, context):
+def lambda_handler(event, context):
     RSS_URL = "https://investinglive.com/rss/"
     print(f"Event: {json.dumps(event)}")
     try:
