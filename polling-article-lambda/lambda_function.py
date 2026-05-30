@@ -6,7 +6,7 @@ import feedparser
 from botocore.exceptions import ClientError
 
 
-ARTICLE_TABLE_NAME = os.environ["TABLE_NAME"]
+ARTICLE_TABLE_NAME = os.environ["ARTICLE_TABLE_NAME"]
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(ARTICLE_TABLE_NAME)
 
