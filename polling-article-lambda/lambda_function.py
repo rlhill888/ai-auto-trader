@@ -4,7 +4,7 @@ import feedparser
 
 
 def lambda_handler(event, context):
-    RSS_URL = "https://investinglive.com/rss/"
+    RSS_URL = "https://investinglive.com/feed/"
     print(f"Event: {json.dumps(event)}")
     try:
         print(f"Fetching RSS feed from {RSS_URL}")
@@ -14,7 +14,6 @@ def lambda_handler(event, context):
         print("Parsing RSS feed")
 
         feed = feedparser.parse(response.text)
-        print(response.text)
 
         for index, entry in enumerate(feed.entries):
             article = {
