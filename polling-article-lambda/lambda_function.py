@@ -7,8 +7,12 @@ def lambda_handler(event, context):
     RSS_URL = "https://investinglive.com/rss/"
     print(f"Event: {json.dumps(event)}")
     try:
+        print(f"Fetching RSS feed from {RSS_URL}")
         response = requests.get(RSS_URL, timeout=10)
+        print(f"Received response with status code {response.status_code}")
         response.raise_for_status()
+        print("Parsing RSS feed")
+        print(response)
 
         feed = feedparser.parse(response.text)
 
