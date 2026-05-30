@@ -51,6 +51,8 @@ def lambda_handler(event, context):
                 sqs.send_message(
                     QueueUrl=QUEUE_URL,
                     MessageBody=json.dumps({"article": article}),
+                    MessageGroupId="articles",
+                    MessageDeduplicationId=entry["id"]
                 )
                 print(f"Sent article {index} to queue")
 
