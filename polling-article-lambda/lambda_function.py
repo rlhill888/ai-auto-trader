@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import boto3
@@ -52,7 +53,7 @@ def lambda_handler(event, context):
                     QueueUrl=QUEUE_URL,
                     MessageBody=json.dumps({"article": article}),
                     MessageGroupId="articles",
-                    MessageDeduplicationId=entry["id"]
+                    MessageDeduplicationId=hashlib.md5(entry["id"].encode()).hexdigest()
                 )
                 print(f"Sent article {index} to queue")
 
