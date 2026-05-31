@@ -15,13 +15,16 @@ def get_connection():
     if _conn is None:
         try:
             url = urlparse(DATABASE_URL)
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
             _conn = pg8000.connect(
                 host=url.hostname,
                 port=url.port or 5432,
                 database=url.path.lstrip("/"),
                 user=url.username,
                 password=url.password,
-                ssl_context=ssl.create_default_context(),
+                ssl_context=ssl_context,
             )
         except Exception as e:
             _conn = None
