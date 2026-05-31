@@ -22,6 +22,7 @@ def get_connection():
                 user=url.username,
                 password=url.password,
                 ssl_context=ssl.create_default_context(),
+                prepare_threshold=None,
             )
         except Exception as e:
             _conn = None
