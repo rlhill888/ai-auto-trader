@@ -28,7 +28,13 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ matrix.dir }}
         run: |
-          pip install -r requirements.txt -t .
+          pip install \
+            --platform manylinux2014_x86_64 \
+            --implementation cp \
+            --python-version 3.12 \
+            --only-binary=:all: \
+            --target . \
+            -r requirements.txt
 
       - name: Zip package
         run: |
