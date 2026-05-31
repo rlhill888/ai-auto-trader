@@ -70,14 +70,15 @@ def execute_trade(instrument: str, direction: str, units: int) -> str:
     order_create = data.get("orderCreateTransaction", {})
 
     order_id = order_fill.get("id") or order_create.get("id", "unknown")
+    trade_id = order_fill.get("tradeOpened", {}).get("tradeID")
     fill_price = order_fill.get("price", "N/A")
     fill_pl = order_fill.get("pl", "N/A")
     cancel_reason = order_cancel.get("reason", None)
 
     if order_fill.get("id"):
         logger.info(
-            "Order FILLED | transaction_id=%s | instrument=%s | direction=%s | units=%d | fill_price=%s | pl=%s",
-            order_id, instrument, direction, units, fill_price, fill_pl,
+            "Order FILLED | transaction_id=%s | trade_id=%s | instrument=%s | direction=%s | units=%d | fill_price=%s | pl=%s",
+            order_id, trade_id, instrument, direction, units, fill_price, fill_pl,
         )
     elif cancel_reason:
         logger.warning(
@@ -86,8 +87,8 @@ def execute_trade(instrument: str, direction: str, units: int) -> str:
         )
     else:
         logger.info(
-            "Order CREATED (pending fill) | transaction_id=%s | instrument=%s | direction=%s | units=%d",
-            order_id, instrument, direction, units,
+            "Order CREATED (pending fill) | transaction_id=%s | trade_id=%s | instrument=%s | direction=%s | units=%d",
+            order_id, trade_id, instrument, direction, units,
         )
 
-    return order_id
+    return order_id, trade_id

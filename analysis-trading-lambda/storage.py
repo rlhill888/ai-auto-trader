@@ -33,16 +33,16 @@ def get_connection():
     return _conn
 
 
-def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_id: str = None) -> None:
+def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_id: str = None, oanda_trade_id: str = None) -> None:
     global _conn
 
     sql = """
         INSERT INTO trade_decisions (
             trade_id, article_id, article_title, article_summary,
             is_good_trade, instrument, direction, units,
-            reasoning, confidence, timestamp, oanda_order_id, trade_status
+            reasoning, confidence, timestamp, oanda_order_id, oanda_trade_id, trade_status
         ) VALUES (
-            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
         )
     """
 
@@ -59,6 +59,7 @@ def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_
         analysis.get("confidence", 0),
         datetime.now(timezone.utc),
         oanda_order_id or "",
+        oanda_trade_id or "",
         "open" if oanda_order_id else "skipped",
     )
 

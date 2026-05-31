@@ -37,15 +37,15 @@ def lambda_handler(event, context):
             )
 
             if analysis.get("is_good_trade"):
-                oanda_order_id = execute_trade(
+                oanda_order_id, oanda_trade_id = execute_trade(
                     instrument=analysis["instrument"],
                     direction=analysis["direction"],
                     units=units,
                 )
-                store_trade_decision(article, analysis, units=units, oanda_order_id=oanda_order_id)
+                store_trade_decision(article, analysis, units=units, oanda_order_id=oanda_order_id, oanda_trade_id=oanda_trade_id)
                 logger.info(
-                    "TRADE EXECUTED | record=%d | direction=%s | units=%d | instrument=%s | order_id=%s",
-                    index, analysis["direction"], units, analysis["instrument"], oanda_order_id,
+                    "TRADE EXECUTED | record=%d | direction=%s | units=%d | instrument=%s | order_id=%s | trade_id=%s",
+                    index, analysis["direction"], units, analysis["instrument"], oanda_order_id, oanda_trade_id,
                 )
             else:
                 store_trade_decision(article, analysis, units=units)
