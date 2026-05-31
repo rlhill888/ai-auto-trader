@@ -6,8 +6,6 @@ from storage import store_trade_decision
 
 
 def lambda_handler(event, context):
-    print(f"Event: {json.dumps(event)}")
-
     records = event.get("Records", [])
     print(f"Processing {len(records)} record(s)")
 
@@ -18,7 +16,7 @@ def lambda_handler(event, context):
     for index, record in enumerate(records):
         body = json.loads(record["body"])
         article = body.get("article", {})
-        print(f"Record {index}: {json.dumps(article)}")
+        print(f"Record {index}: title={article.get('title', 'N/A')!r} id={article.get('id', 'N/A')!r}")
 
         try:
             analysis = analyze_article(article)
