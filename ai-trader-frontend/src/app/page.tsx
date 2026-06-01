@@ -10,9 +10,10 @@ export default function Home() {
 
       {/* Left — fills height, sections split vertically */}
       <div style={{ width: "75%", borderRight: "1px solid #d2d2d7", height: "100%", display: "flex", flexDirection: "column" }}>
-        <div style={{ flexShrink: 0 }}>
+        <div style={{ flexShrink: 0, borderBottom: "1px solid #d2d2d7" }}>
           <AccountSummary />
         </div>
+
         <div style={{ flex: 1, minHeight: 0, borderBottom: "1px solid #d2d2d7" }}>
           <OngoingTrades />
         </div>

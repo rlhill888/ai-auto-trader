@@ -1,6 +1,15 @@
 .container {
-  padding: 24px 36px;
-  border-bottom: 1px solid #d2d2d7;
+  margin: 20px 20px 16px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .label {
@@ -32,4 +41,21 @@
 
 .negative {
   color: #ff3b30;
+}
+
+.tradesButton {
+  display: inline-block;
+  padding: 10px 22px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #0a0a0a;
+  border-radius: 99px;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: background 0.2s;
+}
+
+.tradesButton:hover {
+  background: #333;
 }

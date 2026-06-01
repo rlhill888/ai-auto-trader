@@ -52,30 +52,28 @@ export default async function TradePage({
           </div>
         </div>
 
-        <hr className={styles.divider} />
+        <div className={styles.card}>
+          <p className={styles.sectionLabel}>Article Summary</p>
+          <p className={styles.body}>{trade.article_summary}</p>
+        </div>
 
-        <p className={styles.sectionLabel}>Article Summary</p>
-        <p className={styles.body}>{trade.article_summary}</p>
+        <div className={styles.card}>
+          <p className={styles.sectionLabel}>AI Reasoning</p>
+          <p className={styles.body}>{trade.reasoning}</p>
+        </div>
 
-        <hr className={styles.divider} />
-
-        <p className={styles.sectionLabel}>AI Reasoning</p>
-        <p className={styles.body}>{trade.reasoning}</p>
-
-        <hr className={styles.divider} />
-
-        <p className={styles.sectionLabel}>Confidence</p>
-        <div className={styles.confidenceRow}>
-          <span className={styles.confidenceValue}>{Math.round(trade.confidence * 100)}%</span>
-          <div className={styles.confidenceBar}>
-            <div className={styles.confidenceFill} style={{ width: `${trade.confidence * 100}%` }} />
+        <div className={styles.card}>
+          <p className={styles.sectionLabel}>Confidence</p>
+          <div className={styles.confidenceRow}>
+            <span className={styles.confidenceValue}>{Math.round(trade.confidence * 100)}%</span>
+            <div className={styles.confidenceBar}>
+              <div className={styles.confidenceFill} style={{ width: `${trade.confidence * 100}%` }} />
+            </div>
           </div>
         </div>
 
-        <hr className={styles.divider} />
-
-        <p className={styles.sectionLabel}>Lesson Learned</p>
-        <div className={styles.lesson}>
+        <div className={`${styles.lesson} ${trade.trade_status === "skipped" ? styles.lessonNeutral : trade.is_good_trade ? styles.lessonGood : styles.lessonBad}`}>
+          <p className={styles.sectionLabel}>Lesson Learned</p>
           <p className={styles.lessonBody}>{getLesson(trade)}</p>
         </div>
       </div>

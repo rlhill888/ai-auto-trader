@@ -1,0 +1,86 @@
+import Link from "next/link";
+import { mockTrades } from "@/lib/mockTrades";
+import styles from "./page.module.css";
+
+export default function TradesPage() {
+  const sorted = [...mockTrades].sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+
+  return (
+    <main style={{ minHeight: "100vh" }}>
+      <div className={styles.container}>
+        <Link href="/" className={styles.back}>
+          ← Back to dashboard
+        </Link>
+
+        <div className={styles.header}>
+          <h1 className={styles.title}>All Trades</h1>
+          <p className={styles.subtitle}>{mockTrades.length} trades recorded</p>
+        </div>
+
+        <div className={styles.list}>
+          {sorted.map((trade) => {
+            const date = new Date(trade.timestamp).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+
+            const statusClass =
+              trade.trade_status === "open"
+                ? styles.statusOpen
+                : trade.trade_status === "closed"
+                ? styles.statusClosed
+                : styles.statusSkipped;
+
+            const outcomeClass =
+              trade.trade_status === "skipped"
+                ? ""
+                : trade.is_good_trade
+                ? styles.good
+                : styles.bad;
+
+            return (
+              <Link
+                key={trade.trade_id}
+                href={`/trades/${trade.trade_id}`}
+                className={`${styles.row} ${outcomeClass}`}
+              >
+                <div className={styles.rowLeft}>
+                  <div className={styles.rowTop}>
+                    <span className={styles.instrument}>
+                      {trade.instrument.replace("_", "/")}
+                    </span>
+                    <span className={`${styles.direction} ${trade.direction === "buy" ? styles.buy : styles.sell}`}>
+                      {trade.direction}
+                    </span>
+                    <span className={`${styles.status} ${statusClass}`}>
+                      {trade.trade_status}
+                    </span>
+                  </div>
+                  <p className={styles.articleTitle}>{trade.article_title}</p>
+                </div>
+
+                <div className={styles.rowRight}>
+                  <div className={styles.confidence}>
+                    <span className={styles.confidenceValue}>
+                      {Math.round(trade.confidence * 100)}%
+                    </span>
+                    <div className={styles.confidenceBar}>
+                      <div
+                        className={styles.confidenceFill}
+                        style={{ width: `${trade.confidence * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                  <span className={styles.date}>{date}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </main>
+  );
+}
