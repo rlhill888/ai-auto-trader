@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import BackgroundAnimation from "@/lib/components/BackgroundAnimation/BackgroundAnimation";
 
 export const metadata: Metadata = {
   title: "AI Trader",
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <BackgroundAnimation />
+        <div style={{ position: "relative", zIndex: 1 }}>{children}</div>
+      </body>
     </html>
   );
 }

@@ -1,0 +1,134 @@
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 60px 40px;
+  color: #0a0a0a;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #aaa;
+  text-decoration: none;
+  margin-bottom: 40px;
+  transition: color 0.15s;
+}
+
+.back:hover {
+  color: #555;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.instrument {
+  font-size: 13px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+  color: #0a0a0a;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.direction {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.buy {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+.sell {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.metaText {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #ebebeb;
+  margin: 28px 0;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #bbb;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+
+.body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #555;
+}
+
+.confidenceRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.confidenceValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.confidenceBar {
+  flex: 1;
+  height: 4px;
+  background: #ebebeb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.confidenceFill {
+  height: 100%;
+  background: linear-gradient(90deg, #16a34a, #4ade80);
+  border-radius: 2px;
+}
+
+.lesson {
+  background: #ffffff;
+  border: 1px solid #ebebeb;
+  border-radius: 10px;
+  padding: 20px 24px;
+}
+
+.lessonBody {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #888;
+}

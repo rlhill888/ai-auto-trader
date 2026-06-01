@@ -1,0 +1,122 @@
+.card {
+  background: #ffffff;
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 230px;
+  max-width: 230px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-snap-align: start;
+}
+
+.card:hover {
+  border-color: #ccc;
+  transform: translateY(-2px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.instrument {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #0a0a0a;
+}
+
+.liveBadge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #16a34a;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16a34a;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.25);
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0);
+  }
+}
+
+.direction {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.buy {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+.sell {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.rowLabel {
+  color: #aaa;
+}
+
+.rowValue {
+  color: #333;
+  font-weight: 500;
+}
+
+.confidenceBar {
+  height: 3px;
+  background: #ebebeb;
+  border-radius: 2px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.confidenceFill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #16a34a, #4ade80);
+}
+
+.timestamp {
+  font-size: 11px;
+  color: #bbb;
+  margin-top: auto;
+}

@@ -12,7 +12,7 @@ export type Trade = {
   timestamp: string;
   oanda_order_id: string;
   oanda_trade_id: string;
-  trade_status: string;
+  trade_status: "open" | "closed" | "skipped";
 };
 
 export const mockTrades: Trade[] = [
@@ -91,10 +91,10 @@ export const mockTrades: Trade[] = [
     units: 2000,
     reasoning: "Weak jobs data increases RBA rate cut expectations, putting downward pressure on AUD.",
     confidence: 0.84,
-    timestamp: "2026-05-29T03:22:14Z",
+    timestamp: "2026-05-28T03:22:14Z",
     oanda_order_id: "ORD-10005",
     oanda_trade_id: "TRD-20005",
-    trade_status: "open",
+    trade_status: "closed",
   },
   {
     trade_id: "a1b2c3d4-0006-4e5f-8a9b-000000000006",
@@ -107,10 +107,10 @@ export const mockTrades: Trade[] = [
     units: 1800,
     reasoning: "Higher oil prices benefit CAD as a petro-currency. USD/CAD expected to fall.",
     confidence: 0.77,
-    timestamp: "2026-05-28T16:10:02Z",
+    timestamp: "2026-05-27T16:10:02Z",
     oanda_order_id: "ORD-10006",
     oanda_trade_id: "TRD-20006",
-    trade_status: "open",
+    trade_status: "closed",
   },
   {
     trade_id: "a1b2c3d4-0007-4e5f-8a9b-000000000007",
@@ -123,7 +123,7 @@ export const mockTrades: Trade[] = [
     units: 0,
     reasoning: "Trade war escalation creates unpredictable volatility. Not enough directional clarity to commit.",
     confidence: 0.38,
-    timestamp: "2026-05-28T09:55:47Z",
+    timestamp: "2026-05-27T09:55:47Z",
     oanda_order_id: "",
     oanda_trade_id: "",
     trade_status: "skipped",
@@ -139,10 +139,10 @@ export const mockTrades: Trade[] = [
     units: 1000,
     reasoning: "SNB rate cut weakens CHF. USD/CHF expected to rise as franc loses appeal.",
     confidence: 0.81,
-    timestamp: "2026-05-27T10:30:00Z",
+    timestamp: "2026-05-26T10:30:00Z",
     oanda_order_id: "ORD-10008",
     oanda_trade_id: "TRD-20008",
-    trade_status: "open",
+    trade_status: "closed",
   },
   {
     trade_id: "a1b2c3d4-0009-4e5f-8a9b-000000000009",
@@ -155,10 +155,10 @@ export const mockTrades: Trade[] = [
     units: 1300,
     reasoning: "Below-target inflation reinforces ECB rate cut narrative, weakening EUR against USD.",
     confidence: 0.75,
-    timestamp: "2026-05-27T07:15:33Z",
+    timestamp: "2026-05-25T07:15:33Z",
     oanda_order_id: "ORD-10009",
     oanda_trade_id: "TRD-20009",
-    trade_status: "open",
+    trade_status: "closed",
   },
   {
     trade_id: "a1b2c3d4-0010-4e5f-8a9b-000000000010",
@@ -171,7 +171,7 @@ export const mockTrades: Trade[] = [
     units: 900,
     reasoning: "Hawkish RBNZ surprise boosts NZD. Market repricing of rate path favors NZD appreciation.",
     confidence: 0.73,
-    timestamp: "2026-05-26T22:00:11Z",
+    timestamp: "2026-05-24T22:00:11Z",
     oanda_order_id: "ORD-10010",
     oanda_trade_id: "TRD-20010",
     trade_status: "open",

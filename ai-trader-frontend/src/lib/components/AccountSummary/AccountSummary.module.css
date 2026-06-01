@@ -1,0 +1,35 @@
+.container {
+  padding: 20px 40px;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+}
+
+.balance {
+  font-size: 38px;
+  font-weight: 700;
+  color: #16a34a;
+  letter-spacing: -1.5px;
+  line-height: 1;
+}
+
+.profit {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+.positive {
+  color: #16a34a;
+}
+
+.negative {
+  color: #dc2626;
+}
