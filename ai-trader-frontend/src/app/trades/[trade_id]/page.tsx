@@ -33,7 +33,7 @@ export default async function TradePage({
   });
 
   return (
-    <main style={{ minHeight: "100vh" }}>
+    <main style={{ minHeight: "100vh", background: "#ffffff" }}>
       <div className={styles.container}>
         <Link href="/" className={styles.back}>
           ← Back to dashboard
