@@ -6,17 +6,17 @@ import ArticleCarousel from "@/lib/components/ArticleCarousel/ArticleCarousel";
 
 export default function Home() {
   return (
-    <main style={{ color: "#0a0a0a", height: "100vh", overflow: "hidden", display: "flex" }}>
+    <main style={{ color: "#000000", height: "100vh", overflow: "hidden", display: "flex" }}>
 
       {/* Left — fills height, sections split vertically */}
-      <div style={{ width: "75%", borderRight: "1px solid #ebebeb", height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ width: "75%", borderRight: "1px solid #d2d2d7", height: "100%", display: "flex", flexDirection: "column" }}>
         <div style={{ flexShrink: 0 }}>
           <AccountSummary />
         </div>
-        <div style={{ flex: 1, minHeight: 0, borderBottom: "1px solid #ebebeb", overflow: "hidden" }}>
+        <div style={{ flex: 1, minHeight: 0, borderBottom: "1px solid #d2d2d7" }}>
           <OngoingTrades />
         </div>
-        <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
+        <div style={{ flex: 1, minHeight: 0 }}>
           <ClosedTrades />
         </div>
       </div>

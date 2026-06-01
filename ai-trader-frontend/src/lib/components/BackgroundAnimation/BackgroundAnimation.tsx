@@ -13,7 +13,7 @@ type Particle = {
 
 const PARTICLE_COUNT = 55;
 const CONNECTION_DISTANCE = 120;
-const PARTICLE_COLOR = "22, 163, 74";
+const PARTICLE_COLOR = "0, 122, 255";
 
 export default function BackgroundAnimation() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

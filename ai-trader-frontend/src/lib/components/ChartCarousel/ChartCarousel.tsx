@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
@@ -44,9 +44,9 @@ const { winLoss, byInstrument, confidence, byDirection } = buildChartData();
 
 const TOOLTIP_STYLE = {
   backgroundColor: "#ffffff",
-  border: "1px solid #ebebeb",
-  borderRadius: "6px",
-  color: "#0a0a0a",
+  border: "1px solid #d2d2d7",
+  borderRadius: "10px",
+  color: "#000000",
   fontSize: "12px",
 };
 
@@ -76,8 +76,8 @@ function SlideChart({ slideKey }: { slideKey: string }) {
     return (
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={byInstrument} margin={{ left: -20, bottom: 0 }}>
-          <XAxis dataKey="instrument" tick={{ fill: "#999", fontSize: 10 }} />
-          <YAxis tick={{ fill: "#999", fontSize: 10 }} />
+          <XAxis dataKey="instrument" tick={{ fill: "#6e6e73", fontSize: 10 }} />
+          <YAxis tick={{ fill: "#6e6e73", fontSize: 10 }} />
           <Tooltip contentStyle={TOOLTIP_STYLE} />
           <Bar dataKey="trades" fill="#4ade80" radius={[4, 4, 0, 0]} />
         </BarChart>
@@ -88,8 +88,8 @@ function SlideChart({ slideKey }: { slideKey: string }) {
     return (
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={confidence} margin={{ left: -20, bottom: 0 }}>
-          <XAxis dataKey="name" tick={{ fill: "#999", fontSize: 10 }} />
-          <YAxis domain={[0, 100]} tick={{ fill: "#999", fontSize: 10 }} unit="%" />
+          <XAxis dataKey="name" tick={{ fill: "#6e6e73", fontSize: 10 }} />
+          <YAxis domain={[0, 100]} tick={{ fill: "#6e6e73", fontSize: 10 }} unit="%" />
           <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v) => [`${v}%`, "Confidence"]} />
           <Bar dataKey="confidence" fill="#60a5fa" radius={[4, 4, 0, 0]} />
         </BarChart>
@@ -99,8 +99,8 @@ function SlideChart({ slideKey }: { slideKey: string }) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={byDirection} margin={{ left: -20, bottom: 0 }}>
-        <XAxis dataKey="name" tick={{ fill: "#999", fontSize: 10 }} />
-        <YAxis tick={{ fill: "#999", fontSize: 10 }} />
+        <XAxis dataKey="name" tick={{ fill: "#6e6e73", fontSize: 10 }} />
+        <YAxis tick={{ fill: "#6e6e73", fontSize: 10 }} />
         <Tooltip contentStyle={TOOLTIP_STYLE} />
         <Bar dataKey="units" radius={[4, 4, 0, 0]}>
           {byDirection.map((entry, i) => (
@@ -114,9 +114,36 @@ function SlideChart({ slideKey }: { slideKey: string }) {
 
 export default function ChartCarousel() {
   const [index, setIndex] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
+  const startInterval = () => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setIndex((i) => (i + 1) % slideConfigs.length);
+    }, 5000);
+  };
+
+  useEffect(() => {
+    startInterval();
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  const prev = () => {
+    clearInterval(intervalRef.current);
+    setIndex((i) => (i - 1 + slideConfigs.length) % slideConfigs.length);
+  };
+
+  const next = () => {
+    clearInterval(intervalRef.current);
+    setIndex((i) => (i + 1) % slideConfigs.length);
+  };
 
   return (
-    <section className={styles.container}>
+    <section
+      className={styles.container}
+      onMouseEnter={() => clearInterval(intervalRef.current)}
+      onMouseLeave={startInterval}
+    >
       <p className={styles.title}>Performance Charts</p>
       <div className={styles.carousel}>
         <div className={styles.slide}>
@@ -126,13 +153,21 @@ export default function ChartCarousel() {
           </div>
         </div>
         <div className={styles.nav}>
-          <button className={styles.navBtn} onClick={() => setIndex((i) => (i - 1 + slideConfigs.length) % slideConfigs.length)}>‹</button>
+          <button className={styles.navBtn} onClick={prev} aria-label="Previous">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
           <div className={styles.dots}>
             {slideConfigs.map((_, i) => (
               <div key={i} className={`${styles.dot} ${i === index ? styles.dotActive : ""}`} />
             ))}
           </div>
-          <button className={styles.navBtn} onClick={() => setIndex((i) => (i + 1) % slideConfigs.length)}>›</button>
+          <button className={styles.navBtn} onClick={next} aria-label="Next">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
         </div>
       </div>
     </section>

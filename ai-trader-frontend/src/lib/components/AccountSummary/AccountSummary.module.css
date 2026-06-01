@@ -1,35 +1,35 @@
 .container {
-  padding: 20px 40px;
-  border-bottom: 1px solid #ebebeb;
+  padding: 24px 36px;
+  border-bottom: 1px solid #d2d2d7;
 }
 
 .label {
   font-size: 11px;
-  font-weight: 600;
-  color: #aaa;
+  font-weight: 500;
+  color: #6e6e73;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .balance {
-  font-size: 38px;
+  font-size: 42px;
   font-weight: 700;
-  color: #16a34a;
-  letter-spacing: -1.5px;
+  color: #000000;
+  letter-spacing: -2px;
   line-height: 1;
 }
 
 .profit {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   margin-top: 6px;
 }
 
 .positive {
-  color: #16a34a;
+  color: #34c759;
 }
 
 .negative {
-  color: #dc2626;
+  color: #ff3b30;
 }

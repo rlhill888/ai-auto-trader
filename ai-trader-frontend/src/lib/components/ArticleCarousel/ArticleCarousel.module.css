@@ -1,40 +1,60 @@
 .container {
-  padding: 0 20px 20px;
-  border-top: 1px solid #ebebeb;
-  padding-top: 16px;
+  padding: 16px 20px 20px;
+  border-top: 1px solid #d2d2d7;
 }
 
 .title {
-  font-size: 11px;
-  font-weight: 600;
-  color: #aaa;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: -0.3px;
   margin-bottom: 12px;
+}
+
+.cardWrapper {
+  overflow: hidden;
+  border-radius: 14px;
 }
 
 .card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
   background: #ffffff;
-  border: 1px solid #ebebeb;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 14px;
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.slideFromRight {
+  animation: slideFromRight 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.slideFromLeft {
+  animation: slideFromLeft 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes slideFromRight {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideFromLeft {
+  from { transform: translateX(-40px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 .card:hover {
-  border-color: #ccc;
+  background: #e5e5ea;
   transform: translateY(-1px);
 }
 
 .cardTitle {
   font-size: 12px;
   font-weight: 600;
-  color: #0a0a0a;
+  color: #000000;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -44,7 +64,7 @@
 
 .cardSummary {
   font-size: 11px;
-  color: #888;
+  color: #6e6e73;
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -55,73 +75,75 @@
 .meta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
+  margin-top: 2px;
 }
 
 .badge {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 20px;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.5px;
 }
 
 .buy {
-  background: rgba(22, 163, 74, 0.1);
-  color: #16a34a;
+  background: rgba(52, 199, 89, 0.15);
+  color: #1d8348;
 }
 
 .sell {
-  background: rgba(220, 38, 38, 0.1);
-  color: #dc2626;
+  background: rgba(255, 59, 48, 0.12);
+  color: #c0392b;
 }
 
 .skipped {
-  background: rgba(0, 0, 0, 0.05);
-  color: #aaa;
+  background: #e5e5ea;
+  color: #6e6e73;
 }
 
 .instrument {
   font-size: 11px;
   font-weight: 600;
-  color: #bbb;
+  color: #aeaeb2;
 }
 
 .timestamp {
   font-size: 10px;
-  color: #ccc;
+  color: #c7c7cc;
 }
 
 .nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 14px;
   margin-top: 10px;
 }
 
 .navBtn {
-  background: #ffffff;
-  border: 1px solid #ebebeb;
-  color: #888;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
+  background: transparent;
+  border: 1px solid #d2d2d7;
+  color: #6e6e73;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
 .navBtn:hover {
-  background: #f0f0f0;
-  color: #0a0a0a;
+  background: #000000;
+  border-color: #000000;
+  color: #ffffff;
+  transform: scale(1.08);
 }
 
 .counter {
   font-size: 11px;
-  color: #ccc;
+  color: #aeaeb2;
 }

@@ -6,12 +6,11 @@
 }
 
 .title {
-  font-size: 11px;
-  font-weight: 600;
-  color: #aaa;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: -0.3px;
+  margin-bottom: 12px;
   flex-shrink: 0;
 }
 
@@ -24,8 +23,7 @@
 
 .slide {
   background: #ffffff;
-  border: 1px solid #ebebeb;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px;
   flex: 1;
   min-height: 0;
@@ -34,55 +32,58 @@
 }
 
 .slideTitle {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
-  color: #888;
-  margin-bottom: 12px;
+  color: #6e6e73;
+  margin-bottom: 10px;
   flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
 
 .nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin-top: 12px;
+  gap: 14px;
+  margin-top: 10px;
   flex-shrink: 0;
 }
 
 .navBtn {
-  background: #ffffff;
-  border: 1px solid #ebebeb;
-  color: #888;
+  background: transparent;
+  border: 1px solid #d2d2d7;
+  color: #6e6e73;
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
 .navBtn:hover {
-  background: #f0f0f0;
-  color: #0a0a0a;
+  background: #000000;
+  border-color: #000000;
+  color: #ffffff;
+  transform: scale(1.08);
 }
 
 .dots {
   display: flex;
-  gap: 6px;
+  gap: 5px;
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #ddd;
+  background: #d2d2d7;
   transition: background 0.2s;
 }
 
 .dotActive {
-  background: #16a34a;
+  background: #000000;
 }
