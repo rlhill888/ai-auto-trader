@@ -16,6 +16,8 @@ jobs:
             function_name_secret: POLLING_ARTICLE_LAMBDA_NAME
           - dir: analysis-trading-lambda
             function_name_secret: ANALYSIS_TRADING_LAMBDA_NAME
+          - dir: ai-trade-checker
+            function_name_secret: AI_TRADE_CHECKER_LAMBDA_NAME
 
     steps:
       - uses: actions/checkout@v4
