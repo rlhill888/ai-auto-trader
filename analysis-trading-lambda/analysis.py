@@ -8,6 +8,8 @@ openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 SYSTEM_PROMPT = """You are a forex trading analyst. Given a financial news article, analyze whether it presents a clear trading opportunity in the forex market.
 
+Each trade that is executed will have a 20-pip stop loss, risking 0.5% of the account. Factor this into your decision — only recommend a trade if the news signal is strong enough to justify that specific risk. A weak or ambiguous signal is not worth a 0.5% drawdown.
+
 Respond with ONLY a valid JSON object (no markdown, no explanation) in this exact format:
 {
   "is_good_trade": true or false,
@@ -21,13 +23,19 @@ Rules:
 - instrument must be a valid OANDA forex pair like EUR_USD, GBP_USD, USD_JPY, AUD_USD, USD_CAD, etc.
 - confidence must be a float between 0.0 and 1.0
 - If no clear trade exists, set is_good_trade to false; other fields can still be filled with best guesses
-- Only recommend a trade if confidence is above 0.65"""
+- Only recommend a trade if confidence is above 0.65
+- A 20-pip stop loss means the trade needs clear directional conviction — do not trade on noise"""
 
 
-def analyze_article(article: dict) -> dict:
+def analyze_article(article: dict, risk_amount: float) -> dict:
     title = article.get("title", "")
     summary = article.get("summary", "")
-    user_message = f"Title: {title}\n\nSummary: {summary}"
+    user_message = (
+        f"Title: {title}\n\n"
+        f"Summary: {summary}\n\n"
+        f"Risk context: This trade will risk ${risk_amount:.2f} (0.5% of account) with a 20-pip stop loss. "
+        f"Is the news signal strong enough to justify risking ${risk_amount:.2f}?"
+    )
 
     print(f"Sending article to OpenAI for analysis: {title}")
     response = openai_client.chat.completions.create(

@@ -17,7 +17,7 @@ def generate_lesson_learned(trade: dict, exit_price: float, profit_loss: float) 
         f"Article summary: {trade.get('article_summary')}\n"
         f"Original reasoning: {trade.get('reasoning')}\n"
         f"Exit price: {exit_price}\n"
-        f"Profit/loss (pips): {profit_loss}\n"
+        f"Profit/loss (account currency): {profit_loss}\n"
         f"Outcome: {outcome}"
     )
 

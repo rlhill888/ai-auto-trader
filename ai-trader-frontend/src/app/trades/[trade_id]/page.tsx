@@ -26,9 +26,16 @@ export default async function TradePage({
   return (
     <main style={{ minHeight: "100vh", background: "#ffffff" }}>
       <div className={styles.container}>
-        <Link href="/" className={styles.back}>
-          ← Back to dashboard
-        </Link>
+        <div className={styles.topBar}>
+          <Link href="/" className={styles.back}>
+            ← Back to dashboard
+          </Link>
+          {trade.article_id && (
+            <a href={trade.article_id} target="_blank" rel="noopener noreferrer" className={styles.articleLink}>
+              Article Link ↗
+            </a>
+          )}
+        </div>
 
         <div className={styles.header}>
           <p className={styles.instrument}>{trade.instrument.replace("_", "/")}</p>

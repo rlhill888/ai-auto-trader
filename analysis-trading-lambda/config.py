@@ -26,3 +26,6 @@ OANDA_BASE_URL = (
     if OANDA_ENVIRONMENT == "live"
     else "https://api-fxpractice.oanda.com"
 )
+
+STOP_LOSS_PIPS = 20
+RISK_PER_TRADE = 0.005  # 0.5% of account

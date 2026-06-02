@@ -18,11 +18,18 @@ export default function TradeCard({ trade, live = false }: Props) {
   return (
     <Link href={`/trades/${trade.trade_id}`} className={styles.card}>
       <div className={styles.header}>
-        <span className={styles.instrument}>{trade.instrument.replace("_", "/")}</span>
+        <span className={`${styles.instrument} ${trade.trade_status === "closed" && trade.is_successful != null ? (trade.is_successful ? styles.instrumentSuccess : styles.instrumentFail) : ""}`}>
+          {trade.instrument.replace("_", "/")}
+        </span>
         {live && (
           <span className={styles.liveBadge}>
             <span className={styles.liveDot} />
             Live
+          </span>
+        )}
+        {trade.trade_status === "closed" && trade.profit_loss != null && (
+          <span className={trade.profit_loss >= 0 ? styles.plPositive : styles.plNegative}>
+            {trade.profit_loss >= 0 ? "+$" : "-$"}{Math.abs(trade.profit_loss).toFixed(2)}
           </span>
         )}
       </div>

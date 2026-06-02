@@ -36,6 +36,14 @@
   color: #000000;
 }
 
+.instrumentSuccess {
+  color: #1d8348;
+}
+
+.instrumentFail {
+  color: #c0392b;
+}
+
 .liveBadge {
   display: flex;
   align-items: center;
@@ -53,6 +61,18 @@
   border-radius: 50%;
   background: #34c759;
   animation: pulse 1.6s ease-in-out infinite;
+}
+
+.plPositive {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1d8348;
+}
+
+.plNegative {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c0392b;
 }
 
 @keyframes pulse {

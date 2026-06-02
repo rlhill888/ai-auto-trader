@@ -14,5 +14,7 @@ export type Trade = {
   oanda_trade_id: string;
   trade_status: "open" | "closed" | "skipped";
   is_successful?: boolean;
+  profit_loss?: number;
+  exit_price?: number;
   lesson_learned?: string;
 };
