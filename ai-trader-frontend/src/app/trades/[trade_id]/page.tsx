@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import parse from "html-react-parser";
 import { getTrade } from "@/lib/api";
 import styles from "./page.module.css";
+import LivePipBar from "./LivePipBar";
 
 export default async function TradePage({
   params,
@@ -48,11 +49,25 @@ export default async function TradePage({
                 {trade.direction}
               </span>
             )}
+            {trade.trade_status === "open" && (
+              <span className={styles.liveBadge}>
+                <span className={styles.liveDot} />
+                Live
+              </span>
+            )}
             <span className={styles.metaText}>{trade.units.toLocaleString()} units</span>
             <span className={styles.metaText}>·</span>
             <span className={styles.metaText}>{formatted}</span>
           </div>
         </div>
+
+        {trade.trade_status === "open" && (
+          <LivePipBar
+            oandaTradeId={trade.oanda_trade_id}
+            instrument={trade.instrument}
+            units={trade.units}
+          />
+        )}
 
         <div className={styles.card}>
           <p className={styles.sectionLabel}>Article Summary</p>
