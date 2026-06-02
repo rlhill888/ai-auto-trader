@@ -21,10 +21,10 @@ def get_table():
 def update_daily_money_made(profit_loss: float) -> None:
     try:
         is_successful = profit_loss > 0
-        outcome_field = "daily_succeeded" if is_successful else "daily_failed"
+        outcome_field = "dailySucceeded" if is_successful else "dailyFailed"
         get_table().update_item(
             Key={"globalKey": "GLOBAL"},
-            UpdateExpression=f"ADD daily_money_made :amount, {outcome_field} :one",
+            UpdateExpression=f"ADD dailyMoneyMade :amount, {outcome_field} :one",
             ExpressionAttributeValues={
                 ":amount": Decimal(str(round(profit_loss, 2))),
                 ":one": 1,

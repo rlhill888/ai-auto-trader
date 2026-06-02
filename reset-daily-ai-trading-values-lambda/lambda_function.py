@@ -17,7 +17,7 @@ def lambda_handler(event, context):
 
     table.update_item(
         Key={"globalKey": "GLOBAL"},
-        UpdateExpression="SET daily_money_made = :zero, daily_succeeded = :zero, daily_failed = :zero",
+        UpdateExpression="SET dailyMoneyMade = :zero, dailySucceeded = :zero, dailyFailed = :zero",
         ExpressionAttributeValues={":zero": 0},
     )
 

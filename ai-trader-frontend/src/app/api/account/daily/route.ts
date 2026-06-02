@@ -12,10 +12,10 @@ export async function GET() {
     const item = result.Item ?? {};
 
     return NextResponse.json({
-      dailyMoneyMade: Number(item.daily_money_made ?? 0),
-      tradesCompleted: Number((item.daily_succeeded ?? 0)) + Number((item.daily_failed ?? 0)),
-      succeeded: Number(item.daily_succeeded ?? 0),
-      failed: Number(item.daily_failed ?? 0),
+      dailyMoneyMade: Number(item.dailyMoneyMade ?? 0),
+      tradesCompleted: Number(item.dailySucceeded ?? 0) + Number(item.dailyFailed ?? 0),
+      succeeded: Number(item.dailySucceeded ?? 0),
+      failed: Number(item.dailyFailed ?? 0),
     });
   } catch (err) {
     console.error("Failed to fetch daily stats:", err);
