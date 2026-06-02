@@ -27,9 +27,15 @@ export async function getAccountNav(): Promise<number> {
   return data.nav ?? 0;
 }
 
-export async function getDailyMoneyMade(): Promise<number> {
+export type DailyStats = {
+  dailyMoneyMade: number;
+  tradesCompleted: number;
+  succeeded: number;
+  failed: number;
+};
+
+export async function getDailyStats(): Promise<DailyStats> {
   const res = await fetch(`${baseUrl()}/api/account/daily`, { cache: "no-store" });
-  if (!res.ok) return 0;
-  const data = await res.json();
-  return data.dailyMoneyMade ?? 0;
+  if (!res.ok) return { dailyMoneyMade: 0, tradesCompleted: 0, succeeded: 0, failed: 0 };
+  return res.json();
 }

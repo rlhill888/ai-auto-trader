@@ -81,3 +81,40 @@
 .tradesButton:hover {
   background: #333;
 }
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.dailyStats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.statsTotal {
+  font-size: 11px;
+  color: #6e6e73;
+  font-weight: 500;
+}
+
+.statsBreakdown {
+  display: flex;
+  gap: 10px;
+}
+
+.statsSucceeded {
+  font-size: 12px;
+  font-weight: 700;
+  color: #34c759;
+}
+
+.statsFailed {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ff3b30;
+}

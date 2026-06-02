@@ -1,10 +1,11 @@
 import Link from "next/link";
 import styles from "./AccountSummary.module.css";
-import { getAccountNav, getDailyMoneyMade } from "@/lib/api";
+import { getAccountNav, getDailyStats } from "@/lib/api";
 
 export default async function AccountSummary() {
-  const [nav, dailyMoneyMade] = await Promise.all([getAccountNav(), getDailyMoneyMade()]);
+  const [nav, daily] = await Promise.all([getAccountNav(), getDailyStats()]);
 
+  const { dailyMoneyMade, tradesCompleted, succeeded, failed } = daily;
   const isPositive = dailyMoneyMade >= 0;
 
   return (
@@ -18,9 +19,20 @@ export default async function AccountSummary() {
           {isPositive ? "+" : "-"}${Math.abs(dailyMoneyMade).toFixed(2)} today
         </p>
       </div>
-      <Link href="/trades" className={styles.tradesButton}>
-        View all trades →
-      </Link>
+      <div className={styles.right}>
+        <Link href="/trades" className={styles.tradesButton}>
+          View all trades →
+        </Link>
+        {tradesCompleted > 0 && (
+          <div className={styles.dailyStats}>
+            <span className={styles.statsTotal}>{tradesCompleted} trade{tradesCompleted !== 1 ? "s" : ""} today</span>
+            <div className={styles.statsBreakdown}>
+              <span className={styles.statsSucceeded}>{succeeded} succeeded</span>
+              <span className={styles.statsFailed}>{failed} failed</span>
+            </div>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

@@ -17,9 +17,9 @@ def lambda_handler(event, context):
 
     table.update_item(
         Key={"globalKey": "GLOBAL"},
-        UpdateExpression="SET daily_money_made = :zero",
+        UpdateExpression="SET daily_money_made = :zero, daily_succeeded = :zero, daily_failed = :zero",
         ExpressionAttributeValues={":zero": 0},
     )
 
-    logger.info("daily_money_made reset to 0")
+    logger.info("Daily values reset to 0")
     return {"statusCode": 200, "body": "Reset complete"}
