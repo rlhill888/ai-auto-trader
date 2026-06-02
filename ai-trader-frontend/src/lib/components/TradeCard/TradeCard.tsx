@@ -5,9 +5,10 @@ import { Trade } from "@/lib/types";
 type Props = {
   trade: Trade;
   live?: boolean;
+  unrealizedPl?: number | null;
 };
 
-export default function TradeCard({ trade, live = false }: Props) {
+export default function TradeCard({ trade, live = false, unrealizedPl = null }: Props) {
   const formatted = new Date(trade.timestamp).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -30,6 +31,11 @@ export default function TradeCard({ trade, live = false }: Props) {
         {trade.trade_status === "closed" && trade.profit_loss != null && (
           <span className={trade.profit_loss >= 0 ? styles.plPositive : styles.plNegative}>
             {trade.profit_loss >= 0 ? "+$" : "-$"}{Math.abs(trade.profit_loss).toFixed(2)}
+          </span>
+        )}
+        {live && unrealizedPl != null && (
+          <span className={unrealizedPl >= 0 ? styles.plPositive : styles.plNegative}>
+            {unrealizedPl >= 0 ? "+$" : "-$"}{Math.abs(unrealizedPl).toFixed(2)}
           </span>
         )}
       </div>

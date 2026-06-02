@@ -1,5 +1,5 @@
 import styles from "./OngoingTrades.module.css";
-import TradeCard from "@/lib/components/TradeCard/TradeCard";
+import LiveTradesRow from "./LiveTradesRow";
 import { getTrades } from "@/lib/api";
 
 export default async function OngoingTrades() {
@@ -11,11 +11,7 @@ export default async function OngoingTrades() {
       {liveTrades.length === 0 ? (
         <p className={styles.empty}>No active trades.</p>
       ) : (
-        <div className={styles.row}>
-          {liveTrades.map((trade) => (
-            <TradeCard key={trade.trade_id} trade={trade} live />
-          ))}
-        </div>
+        <LiveTradesRow trades={liveTrades} />
       )}
     </section>
   );
