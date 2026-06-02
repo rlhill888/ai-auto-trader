@@ -1,14 +1,27 @@
 import Link from "next/link";
 import styles from "./TradeCard.module.css";
-import { Trade } from "@/lib/types";
+import { Trade, LiveTradeData } from "@/lib/types";
 
 type Props = {
   trade: Trade;
   live?: boolean;
-  unrealizedPl?: number | null;
+  liveData?: LiveTradeData | null;
 };
 
-export default function TradeCard({ trade, live = false, unrealizedPl = null }: Props) {
+export default function TradeCard({ trade, live = false, liveData = null }: Props) {
+  const unrealizedPl = liveData?.unrealizedPl ?? null;
+
+  const pipSize = trade.instrument.includes("JPY") ? 0.01 : 0.0001;
+  const pips = liveData ? liveData.unrealizedPl / (trade.units * pipSize) : null;
+
+  const canShowBar = liveData?.slPrice != null && liveData?.tpPrice != null && liveData?.entryPrice != null && pips != null;
+  const SL_PIPS = canShowBar ? Math.abs(liveData!.entryPrice - liveData!.slPrice!) / pipSize : null;
+  const TP_PIPS = canShowBar ? Math.abs(liveData!.tpPrice! - liveData!.entryPrice) / pipSize : null;
+  const TOTAL_PIPS = SL_PIPS != null && TP_PIPS != null ? SL_PIPS + TP_PIPS : null;
+  const entryPct = TOTAL_PIPS != null && SL_PIPS != null ? (SL_PIPS / TOTAL_PIPS) * 100 : null;
+  const markerPct = entryPct != null && pips != null && TOTAL_PIPS != null
+    ? Math.max(0, Math.min(100, entryPct + (pips / TOTAL_PIPS) * 100))
+    : null;
   const formatted = new Date(trade.timestamp).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -43,6 +56,31 @@ export default function TradeCard({ trade, live = false, unrealizedPl = null }: 
       <span className={`${styles.direction} ${trade.direction === "buy" ? styles.buy : styles.sell}`}>
         {trade.direction}
       </span>
+
+      {live && canShowBar && entryPct != null && markerPct != null && (
+        <div className={styles.liveProgress}>
+          <div className={styles.liveProgressHeader}>
+            <span className={styles.rowLabel}>Entry {liveData.entryPrice.toFixed(trade.instrument.includes("JPY") ? 3 : 5)}</span>
+            <span className={pips >= 0 ? styles.plPositive : styles.plNegative}>
+              {pips >= 0 ? "+" : ""}{pips.toFixed(1)} pips
+            </span>
+          </div>
+          <div
+            className={styles.tpSlTrack}
+            style={{ '--entry-pct': `${entryPct}%` } as React.CSSProperties}
+          >
+            <div className={styles.tpSlEntry} style={{ left: `${entryPct}%` }} />
+            <div
+              className={`${styles.tpSlMarker} ${pips >= 0 ? styles.tpSlMarkerPositive : styles.tpSlMarkerNegative}`}
+              style={{ left: `${markerPct}%` }}
+            />
+          </div>
+          <div className={styles.tpSlLabels}>
+            <span>SL</span>
+            <span>TP</span>
+          </div>
+        </div>
+      )}
 
       <div className={styles.row}>
         <span className={styles.rowLabel}>Units</span>

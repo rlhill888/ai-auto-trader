@@ -66,6 +66,15 @@ def calculate_units(nav: float, pip_size: float) -> int:
     return result
 
 
+def has_open_position(instrument: str) -> bool:
+    url = f"{OANDA_BASE_URL}/v3/accounts/{OANDA_ACCOUNT_ID}/openPositions"
+    headers = {"Authorization": f"Bearer {OANDA_API_KEY}"}
+    response = requests.get(url, headers=headers, timeout=10)
+    response.raise_for_status()
+    positions = response.json().get("positions", [])
+    return any(p["instrument"] == instrument for p in positions)
+
+
 def execute_trade(instrument: str, direction: str, units: int, stop_loss_price: str, take_profit_price: str) -> str:
     signed_units = units if direction == "buy" else -units
     payload = {

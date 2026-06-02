@@ -22,10 +22,20 @@ export async function GET() {
   }
 
   const data = await res.json();
-  const trades: Record<string, number> = {};
+  const trades: Record<string, {
+    unrealizedPl: number;
+    entryPrice: number;
+    tpPrice: number | null;
+    slPrice: number | null;
+  }> = {};
 
   for (const trade of data.trades ?? []) {
-    trades[trade.id] = parseFloat(trade.unrealizedPL ?? "0");
+    trades[trade.id] = {
+      unrealizedPl: parseFloat(trade.unrealizedPL ?? "0"),
+      entryPrice: parseFloat(trade.price ?? "0"),
+      tpPrice: trade.takeProfitOrder ? parseFloat(trade.takeProfitOrder.price) : null,
+      slPrice: trade.stopLossOrder ? parseFloat(trade.stopLossOrder.price) : null,
+    };
   }
 
   return NextResponse.json(trades);

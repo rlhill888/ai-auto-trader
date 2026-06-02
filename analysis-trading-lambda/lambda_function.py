@@ -2,8 +2,8 @@ import json
 import logging
 
 from analysis import analyze_article
-from oanda import calculate_stop_price, calculate_take_profit_price, calculate_units, execute_trade, get_account_nav, get_current_price, get_pip_size
-from storage import store_trade_decision
+from oanda import calculate_stop_price, calculate_take_profit_price, calculate_units, execute_trade, get_account_nav, get_current_price, get_pip_size, has_open_position
+from storage import store_trade_decision, article_already_traded
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -14,6 +14,7 @@ def lambda_handler(event, context):
     logger.info("Processing %d record(s)", len(records))
 
     nav = get_account_nav()
+    traded_this_batch = set()
 
     for index, record in enumerate(records):
         body = json.loads(record["body"])
@@ -39,6 +40,20 @@ def lambda_handler(event, context):
             if analysis.get("is_good_trade"):
                 instrument = analysis["instrument"]
                 direction = analysis["direction"]
+
+                article_id = article.get("id", "")
+                if article_already_traded(article_id):
+                    logger.info("Record %d: article already traded, skipping | article_id=%s", index, article_id)
+                    continue
+
+                if instrument in traded_this_batch:
+                    logger.info("Record %d: instrument already traded in this batch, skipping | instrument=%s", index, instrument)
+                    continue
+
+                if has_open_position(instrument):
+                    logger.info("Record %d: open position already exists, skipping | instrument=%s", index, instrument)
+                    continue
+
                 pip_size = get_pip_size(instrument)
                 units = calculate_units(nav, pip_size)
                 entry_price = get_current_price(instrument, direction)
@@ -57,6 +72,7 @@ def lambda_handler(event, context):
                     stop_loss_price=stop_loss_price,
                     take_profit_price=take_profit_price,
                 )
+                traded_this_batch.add(instrument)
                 store_trade_decision(article, analysis, units=units, oanda_order_id=oanda_order_id, oanda_trade_id=oanda_trade_id)
                 logger.info(
                     "TRADE EXECUTED | record=%d | direction=%s | units=%d | instrument=%s | stop=%s | order_id=%s | trade_id=%s",

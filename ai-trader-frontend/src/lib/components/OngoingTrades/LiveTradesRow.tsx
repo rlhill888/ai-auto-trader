@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import styles from "./OngoingTrades.module.css";
 import TradeCard from "@/lib/components/TradeCard/TradeCard";
-import { Trade } from "@/lib/types";
+import { Trade, LiveTradeData } from "@/lib/types";
 
-const POLL_INTERVAL_MS = 5_000;
+const POLL_INTERVAL_MS = 10_000;
 
 export default function LiveTradesRow({ trades }: { trades: Trade[] }) {
-  const [liveData, setLiveData] = useState<Record<string, number>>({});
+  const [liveData, setLiveData] = useState<Record<string, LiveTradeData>>({});
 
   useEffect(() => {
     async function fetchLive() {
@@ -30,7 +30,7 @@ export default function LiveTradesRow({ trades }: { trades: Trade[] }) {
           key={trade.trade_id}
           trade={trade}
           live
-          unrealizedPl={liveData[trade.oanda_trade_id] ?? null}
+          liveData={liveData[trade.oanda_trade_id] ?? null}
         />
       ))}
     </div>

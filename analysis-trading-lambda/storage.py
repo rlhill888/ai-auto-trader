@@ -33,6 +33,26 @@ def get_connection():
     return _conn
 
 
+def article_already_traded(article_id: str) -> bool:
+    global _conn
+    sql = "SELECT 1 FROM trade_decisions WHERE article_id = %s AND trade_status = 'open' LIMIT 1"
+    for attempt in range(2):
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute(sql, (article_id,))
+                return cursor.fetchone() is not None
+            finally:
+                cursor.close()
+        except Exception as e:
+            print(f"Database error checking article (attempt {attempt + 1}): {e}")
+            _conn = None
+            if attempt == 1:
+                raise
+    return False
+
+
 def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_id: str = None, oanda_trade_id: str = None) -> None:
     global _conn
 
