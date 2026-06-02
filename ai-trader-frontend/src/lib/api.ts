@@ -19,3 +19,17 @@ export async function getTrade(trade_id: string): Promise<Trade | null> {
   if (!res.ok) return null;
   return res.json();
 }
+
+export async function getAccountNav(): Promise<number> {
+  const res = await fetch(`${baseUrl()}/api/account`, { cache: "no-store" });
+  if (!res.ok) return 0;
+  const data = await res.json();
+  return data.nav ?? 0;
+}
+
+export async function getDailyMoneyMade(): Promise<number> {
+  const res = await fetch(`${baseUrl()}/api/account/daily`, { cache: "no-store" });
+  if (!res.ok) return 0;
+  const data = await res.json();
+  return data.dailyMoneyMade ?? 0;
+}

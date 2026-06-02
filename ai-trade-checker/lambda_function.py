@@ -1,6 +1,7 @@
 import json
 import logging
 
+from dynamodb import update_daily_money_made
 from lesson import generate_lesson_learned
 from oanda import get_trade_state
 from storage import get_open_trades, update_trade_closed, update_trade_lesson_learned
@@ -44,6 +45,8 @@ def lambda_handler(event, context):
                     "Trade marked closed | trade_id=%s | oanda_trade_id=%s | exit_price=%.5f | profit_loss=%.2f",
                     trade_id, oanda_trade_id, exit_price, profit_loss,
                 )
+
+                update_daily_money_made(profit_loss)
 
                 try:
                     lesson = generate_lesson_learned(trade, exit_price, profit_loss)
