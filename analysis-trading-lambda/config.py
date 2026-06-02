@@ -28,4 +28,5 @@ OANDA_BASE_URL = (
 )
 
 STOP_LOSS_PIPS = 20
+RISK_REWARD_RATIO = 2  # take profit = 2x stop loss distance (40 pips)
 RISK_PER_TRADE = 0.005  # 0.5% of account

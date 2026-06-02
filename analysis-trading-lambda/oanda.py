@@ -1,7 +1,7 @@
 import logging
 import requests
 
-from config import OANDA_API_KEY, OANDA_ACCOUNT_ID, OANDA_BASE_URL, STOP_LOSS_PIPS, RISK_PER_TRADE
+from config import OANDA_API_KEY, OANDA_ACCOUNT_ID, OANDA_BASE_URL, STOP_LOSS_PIPS, RISK_PER_TRADE, RISK_REWARD_RATIO
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +46,13 @@ def calculate_stop_price(entry_price: float, direction: str, pip_size: float) ->
     return f"{stop:.{decimal_places}f}"
 
 
+def calculate_take_profit_price(entry_price: float, direction: str, pip_size: float) -> str:
+    take_profit_distance = STOP_LOSS_PIPS * RISK_REWARD_RATIO * pip_size
+    tp = entry_price + take_profit_distance if direction == "buy" else entry_price - take_profit_distance
+    decimal_places = 3 if pip_size == 0.01 else 5
+    return f"{tp:.{decimal_places}f}"
+
+
 def calculate_units(nav: float, pip_size: float) -> int:
     """Risk exactly 0.5% of NAV per trade based on stop loss distance."""
     risk_amount = nav * RISK_PER_TRADE
@@ -59,7 +66,7 @@ def calculate_units(nav: float, pip_size: float) -> int:
     return result
 
 
-def execute_trade(instrument: str, direction: str, units: int, stop_loss_price: str) -> str:
+def execute_trade(instrument: str, direction: str, units: int, stop_loss_price: str, take_profit_price: str) -> str:
     signed_units = units if direction == "buy" else -units
     payload = {
         "order": {
@@ -72,6 +79,10 @@ def execute_trade(instrument: str, direction: str, units: int, stop_loss_price: 
                 "price": stop_loss_price,
                 "timeInForce": "GTC",
             },
+            "takeProfitOnFill": {
+                "price": take_profit_price,
+                "timeInForce": "GTC",
+            },
         }
     }
     headers = {
@@ -81,8 +92,8 @@ def execute_trade(instrument: str, direction: str, units: int, stop_loss_price: 
     url = f"{OANDA_BASE_URL}/v3/accounts/{OANDA_ACCOUNT_ID}/orders"
 
     logger.info(
-        "Submitting %s order | instrument=%s | units=%d | signed_units=%d | url=%s",
-        direction, instrument, units, signed_units, url,
+        "Submitting %s order | instrument=%s | units=%d | stop=%s | tp=%s | url=%s",
+        direction, instrument, units, stop_loss_price, take_profit_price, url,
     )
     logger.debug("Order payload: %s", payload)
 

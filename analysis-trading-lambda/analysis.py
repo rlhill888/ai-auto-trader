@@ -8,7 +8,7 @@ openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 SYSTEM_PROMPT = """You are a forex trading analyst. Given a financial news article, analyze whether it presents a clear trading opportunity in the forex market.
 
-Each trade that is executed will have a 20-pip stop loss, risking 0.5% of the account. Factor this into your decision — only recommend a trade if the news signal is strong enough to justify that specific risk. A weak or ambiguous signal is not worth a 0.5% drawdown.
+Each trade uses a 1:2 risk/reward structure — a 20-pip stop loss and a 40-pip take profit. The trade risks 0.5% of the account to potentially gain 1.0%. Only recommend a trade if the news signal gives the price a realistic chance of moving 40 pips in the expected direction before hitting the 20-pip stop. A weak or ambiguous signal is not worth the risk — the take profit is twice as far as the stop loss, so the directional conviction must be high.
 
 Respond with ONLY a valid JSON object (no markdown, no explanation) in this exact format:
 {
@@ -24,17 +24,18 @@ Rules:
 - confidence must be a float between 0.0 and 1.0
 - If no clear trade exists, set is_good_trade to false; other fields can still be filled with best guesses
 - Only recommend a trade if confidence is above 0.65
-- A 20-pip stop loss means the trade needs clear directional conviction — do not trade on noise"""
+- Ask yourself: is this signal strong enough that price is more likely to reach +40 pips than -20 pips?"""
 
 
 def analyze_article(article: dict, risk_amount: float) -> dict:
     title = article.get("title", "")
     summary = article.get("summary", "")
+    reward_amount = round(risk_amount * 2, 2)
     user_message = (
         f"Title: {title}\n\n"
         f"Summary: {summary}\n\n"
-        f"Risk context: This trade will risk ${risk_amount:.2f} (0.5% of account) with a 20-pip stop loss. "
-        f"Is the news signal strong enough to justify risking ${risk_amount:.2f}?"
+        f"Risk/reward context: This trade risks ${risk_amount:.2f} (20-pip stop loss) to potentially gain ${reward_amount:.2f} (40-pip take profit). "
+        f"Is the news signal strong enough that price is more likely to hit +40 pips than -20 pips?"
     )
 
     print(f"Sending article to OpenAI for analysis: {title}")

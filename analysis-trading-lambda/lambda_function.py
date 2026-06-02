@@ -2,7 +2,7 @@ import json
 import logging
 
 from analysis import analyze_article
-from oanda import calculate_stop_price, calculate_units, execute_trade, get_account_nav, get_current_price, get_pip_size
+from oanda import calculate_stop_price, calculate_take_profit_price, calculate_units, execute_trade, get_account_nav, get_current_price, get_pip_size
 from storage import store_trade_decision
 
 logger = logging.getLogger()
@@ -43,10 +43,11 @@ def lambda_handler(event, context):
                 units = calculate_units(nav, pip_size)
                 entry_price = get_current_price(instrument, direction)
                 stop_loss_price = calculate_stop_price(entry_price, direction, pip_size)
+                take_profit_price = calculate_take_profit_price(entry_price, direction, pip_size)
 
                 logger.info(
-                    "Trade sizing | nav=%.2f | units=%d | entry=%.5f | stop=%s",
-                    nav, units, entry_price, stop_loss_price,
+                    "Trade sizing | nav=%.2f | units=%d | entry=%.5f | stop=%s | tp=%s",
+                    nav, units, entry_price, stop_loss_price, take_profit_price,
                 )
 
                 oanda_order_id, oanda_trade_id = execute_trade(
@@ -54,6 +55,7 @@ def lambda_handler(event, context):
                     direction=direction,
                     units=units,
                     stop_loss_price=stop_loss_price,
+                    take_profit_price=take_profit_price,
                 )
                 store_trade_decision(article, analysis, units=units, oanda_order_id=oanda_order_id, oanda_trade_id=oanda_trade_id)
                 logger.info(
