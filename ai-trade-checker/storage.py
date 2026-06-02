@@ -67,12 +67,14 @@ def get_open_trades() -> list[dict]:
 
 def update_trade_closed(trade_id: str, exit_price: float, profit_loss: float, closed_at: str) -> None:
     global _conn
+    is_successful = profit_loss > 0
     sql = """
         UPDATE trade_decisions
-        SET trade_status = 'closed',
-            exit_price   = %s,
-            profit_loss  = %s,
-            closed_at    = %s
+        SET trade_status  = 'closed',
+            exit_price    = %s,
+            profit_loss   = %s,
+            closed_at     = %s,
+            is_successful = %s
         WHERE trade_id = %s
     """
     for attempt in range(2):
@@ -80,11 +82,11 @@ def update_trade_closed(trade_id: str, exit_price: float, profit_loss: float, cl
             conn = get_connection()
             cursor = conn.cursor()
             try:
-                cursor.execute(sql, (exit_price, profit_loss, closed_at, trade_id))
+                cursor.execute(sql, (exit_price, profit_loss, closed_at, is_successful, trade_id))
                 conn.commit()
                 logger.info(
-                    "Trade closed in DB | trade_id=%s | exit_price=%.5f | profit_loss=%.2f | closed_at=%s",
-                    trade_id, exit_price, profit_loss, closed_at,
+                    "Trade closed in DB | trade_id=%s | exit_price=%.5f | profit_loss=%.2f | is_successful=%s | closed_at=%s",
+                    trade_id, exit_price, profit_loss, is_successful, closed_at,
                 )
             finally:
                 cursor.close()

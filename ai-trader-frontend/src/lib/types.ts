@@ -13,5 +13,6 @@ export type Trade = {
   oanda_order_id: string;
   oanda_trade_id: string;
   trade_status: "open" | "closed" | "skipped";
+  is_successful?: boolean;
   lesson_learned?: string;
 };

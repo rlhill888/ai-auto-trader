@@ -2,18 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import parse from "html-react-parser";
 import { getTrade } from "@/lib/api";
-import { Trade } from "@/lib/types";
 import styles from "./page.module.css";
-
-function getLesson(trade: Trade): string {
-  if (trade.trade_status === "skipped") {
-    return `This trade was skipped due to low confidence (${Math.round(trade.confidence * 100)}%). The AI determined there was insufficient directional clarity to commit capital. Monitoring news signals without executing is a valid risk management strategy.`;
-  }
-  if (trade.is_good_trade) {
-    return `The news signal aligned well with a clear macroeconomic narrative, producing a high-confidence directional call. Trades like this — driven by central bank policy or hard economic data — tend to have more predictable short-term outcomes.`;
-  }
-  return `Despite execution, the underlying signal was ambiguous. Future improvements could include raising the minimum confidence threshold or requiring corroborating signals before entering positions on similar setups.`;
-}
 
 export default async function TradePage({
   params,
@@ -78,10 +67,12 @@ export default async function TradePage({
           </div>
         </div>
 
-        <div className={`${styles.lesson} ${trade.trade_status === "skipped" ? styles.lessonNeutral : trade.is_good_trade ? styles.lessonGood : styles.lessonBad}`}>
-          <p className={styles.sectionLabel}>Lesson Learned</p>
-          <p className={styles.lessonBody}>{getLesson(trade)}</p>
-        </div>
+        {trade.trade_status !== "open" && trade.lesson_learned && (
+          <div className={`${styles.lesson} ${trade.trade_status === "skipped" ? styles.lessonNeutral : trade.is_good_trade ? styles.lessonGood : styles.lessonBad}`}>
+            <p className={styles.sectionLabel}>Lesson Learned</p>
+            <p className={styles.lessonBody}>{trade.lesson_learned}</p>
+          </div>
+        )}
       </div>
     </main>
   );
