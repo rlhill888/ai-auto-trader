@@ -50,6 +50,11 @@ def analyze_article(article: dict, risk_amount: float) -> dict:
     )
 
     raw = response.choices[0].message.content.strip()
+    if raw.startswith("```"):
+        raw = raw.split("```", 2)[1]
+        if raw.startswith("json"):
+            raw = raw[4:]
+        raw = raw.strip()
     print(f"OpenAI response: {raw}")
     analysis = json.loads(raw)
 
