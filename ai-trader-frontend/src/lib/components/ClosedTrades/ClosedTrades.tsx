@@ -1,9 +1,9 @@
 import styles from "./ClosedTrades.module.css";
 import TradeCard from "@/lib/components/TradeCard/TradeCard";
-import { mockTrades } from "@/lib/mockTrades";
+import { getTrades } from "@/lib/api";
 
-export default function ClosedTrades() {
-  const closedTrades = mockTrades.filter((t) => t.trade_status === "closed");
+export default async function ClosedTrades() {
+  const closedTrades = await getTrades("closed");
 
   return (
     <section className={styles.container}>

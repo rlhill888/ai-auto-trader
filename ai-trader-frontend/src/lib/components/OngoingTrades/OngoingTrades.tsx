@@ -1,9 +1,9 @@
 import styles from "./OngoingTrades.module.css";
 import TradeCard from "@/lib/components/TradeCard/TradeCard";
-import { mockTrades } from "@/lib/mockTrades";
+import { getTrades } from "@/lib/api";
 
-export default function OngoingTrades() {
-  const liveTrades = mockTrades.filter((t) => t.trade_status === "open");
+export default async function OngoingTrades() {
+  const liveTrades = await getTrades("open");
 
   return (
     <section className={styles.container}>

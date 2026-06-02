@@ -1,6 +1,6 @@
 import Link from "next/link";
 import styles from "./TradeCard.module.css";
-import { Trade } from "@/lib/mockTrades";
+import { Trade } from "@/lib/types";
 
 type Props = {
   trade: Trade;

@@ -3,8 +3,11 @@ import OngoingTrades from "@/lib/components/OngoingTrades/OngoingTrades";
 import ChartCarousel from "@/lib/components/ChartCarousel/ChartCarousel";
 import ClosedTrades from "@/lib/components/ClosedTrades/ClosedTrades";
 import ArticleCarousel from "@/lib/components/ArticleCarousel/ArticleCarousel";
+import { getTrades } from "@/lib/api";
 
-export default function Home() {
+export default async function Home() {
+  const trades = await getTrades();
+
   return (
     <main style={{ color: "#000000", height: "100vh", overflow: "hidden", display: "flex" }}>
 
@@ -13,7 +16,6 @@ export default function Home() {
         <div style={{ flexShrink: 0, borderBottom: "1px solid #d2d2d7" }}>
           <AccountSummary />
         </div>
-
         <div style={{ flex: 1, minHeight: 0, borderBottom: "1px solid #d2d2d7" }}>
           <OngoingTrades />
         </div>
@@ -28,7 +30,7 @@ export default function Home() {
           <ChartCarousel />
         </div>
         <div style={{ flexShrink: 0 }}>
-          <ArticleCarousel />
+          <ArticleCarousel trades={trades} />
         </div>
       </div>
 

@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { mockTrades } from "@/lib/mockTrades";
+import { getTrades } from "@/lib/api";
+import { Trade } from "@/lib/types";
 import styles from "./page.module.css";
 
-export default function TradesPage() {
-  const sorted = [...mockTrades].sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  );
+export default async function TradesPage() {
+  const trades: Trade[] = await getTrades();
 
   return (
     <main style={{ minHeight: "100vh" }}>
@@ -16,11 +15,11 @@ export default function TradesPage() {
 
         <div className={styles.header}>
           <h1 className={styles.title}>All Trades</h1>
-          <p className={styles.subtitle}>{mockTrades.length} trades recorded</p>
+          <p className={styles.subtitle}>{trades.length} trades recorded</p>
         </div>
 
         <div className={styles.list}>
-          {sorted.map((trade) => {
+          {trades.map((trade) => {
             const date = new Date(trade.timestamp).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -52,12 +51,18 @@ export default function TradesPage() {
                     <span className={styles.instrument}>
                       {trade.instrument.replace("_", "/")}
                     </span>
-                    <span className={`${styles.direction} ${trade.direction === "buy" ? styles.buy : styles.sell}`}>
-                      {trade.direction}
-                    </span>
-                    <span className={`${styles.status} ${statusClass}`}>
-                      {trade.trade_status}
-                    </span>
+                    {trade.trade_status === "skipped" ? (
+                      <span className={styles.skipped}>Trade Skipped</span>
+                    ) : (
+                      <span className={`${styles.direction} ${trade.direction === "buy" ? styles.buy : styles.sell}`}>
+                        {trade.direction}
+                      </span>
+                    )}
+                    {trade.trade_status !== "skipped" && (
+                      <span className={`${styles.status} ${statusClass}`}>
+                        {trade.trade_status}
+                      </span>
+                    )}
                   </div>
                   <p className={styles.articleTitle}>{trade.article_title}</p>
                 </div>

@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { mockTrades } from "@/lib/mockTrades";
+import parse from "html-react-parser";
+import { getTrade } from "@/lib/api";
+import { Trade } from "@/lib/types";
 import styles from "./page.module.css";
 
-function getLesson(trade: (typeof mockTrades)[0]): string {
+function getLesson(trade: Trade): string {
   if (trade.trade_status === "skipped") {
     return `This trade was skipped due to low confidence (${Math.round(trade.confidence * 100)}%). The AI determined there was insufficient directional clarity to commit capital. Monitoring news signals without executing is a valid risk management strategy.`;
   }
@@ -19,7 +21,7 @@ export default async function TradePage({
   params: Promise<{ trade_id: string }>;
 }) {
   const { trade_id } = await params;
-  const trade = mockTrades.find((t) => t.trade_id === trade_id);
+  const trade = await getTrade(trade_id);
 
   if (!trade) notFound();
 
@@ -43,9 +45,13 @@ export default async function TradePage({
           <p className={styles.instrument}>{trade.instrument.replace("_", "/")}</p>
           <h1 className={styles.title}>{trade.article_title}</h1>
           <div className={styles.meta}>
-            <span className={`${styles.direction} ${trade.direction === "buy" ? styles.buy : styles.sell}`}>
-              {trade.direction}
-            </span>
+            {trade.trade_status === "skipped" ? (
+              <span className={styles.skipped}>Trade Skipped</span>
+            ) : (
+              <span className={`${styles.direction} ${trade.direction === "buy" ? styles.buy : styles.sell}`}>
+                {trade.direction}
+              </span>
+            )}
             <span className={styles.metaText}>{trade.units.toLocaleString()} units</span>
             <span className={styles.metaText}>·</span>
             <span className={styles.metaText}>{formatted}</span>
@@ -54,7 +60,7 @@ export default async function TradePage({
 
         <div className={styles.card}>
           <p className={styles.sectionLabel}>Article Summary</p>
-          <p className={styles.body}>{trade.article_summary}</p>
+          <div className={styles.body}>{parse(trade.article_summary)}</div>
         </div>
 
         <div className={styles.card}>

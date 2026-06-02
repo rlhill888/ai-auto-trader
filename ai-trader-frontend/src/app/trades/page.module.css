@@ -124,6 +124,18 @@
   border: 1px solid rgba(248, 113, 113, 0.35);
 }
 
+.skipped {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(0, 0, 0, 0.05);
+  color: #999;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .status {
   font-size: 9px;
   font-weight: 700;

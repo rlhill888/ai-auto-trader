@@ -3,44 +3,52 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import styles from "./ArticleCarousel.module.css";
-import { mockTrades } from "@/lib/mockTrades";
+import { Trade } from "@/lib/types";
+import parse, { domToReact, DOMNode, Element } from "html-react-parser";
 
-const articles = [...mockTrades]
-  .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+const summaryParseOptions = {
+  replace(node: DOMNode) {
+    if (node instanceof Element && node.name === "a") {
+      return <span>{domToReact(node.children as DOMNode[], summaryParseOptions)}</span>;
+    }
+  },
+};
 
 const INTERVAL_MS = 4000;
 
-export default function ArticleCarousel() {
+export default function ArticleCarousel({ trades }: { trades: Trade[] }) {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState<"right" | "left">("right");
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   const startInterval = () => {
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setDirection("right");
-      setIndex((i) => (i + 1) % articles.length);
+      setIndex((i) => (i + 1) % trades.length);
     }, INTERVAL_MS);
   };
 
   useEffect(() => {
     startInterval();
     return () => clearInterval(intervalRef.current);
-  }, []);
+  }, [trades.length]);
 
   const next = () => {
     clearInterval(intervalRef.current);
     setDirection("right");
-    setIndex((i) => (i + 1) % articles.length);
+    setIndex((i) => (i + 1) % trades.length);
   };
 
   const prev = () => {
     clearInterval(intervalRef.current);
     setDirection("left");
-    setIndex((i) => (i - 1 + articles.length) % articles.length);
+    setIndex((i) => (i - 1 + trades.length) % trades.length);
   };
 
-  const article = articles[index];
+  if (trades.length === 0) return null;
+
+  const article = trades[index];
 
   const formatted = new Date(article.timestamp).toLocaleDateString("en-US", {
     month: "short",
@@ -60,10 +68,7 @@ export default function ArticleCarousel() {
     article.trade_status === "skipped" ? "skipped" : article.direction;
 
   return (
-    <div
-      className={styles.container}
-      onMouseEnter={() => clearInterval(intervalRef.current)}
-    >
+    <div className={styles.container}>
       <p className={styles.title}>Recent Articles</p>
 
       <div className={styles.cardWrapper}>
@@ -73,7 +78,7 @@ export default function ArticleCarousel() {
           className={`${styles.card} ${direction === "right" ? styles.slideFromRight : styles.slideFromLeft}`}
         >
           <p className={styles.cardTitle}>{article.article_title}</p>
-          <p className={styles.cardSummary}>{article.article_summary}</p>
+          <div className={styles.cardSummary}>{parse(article.article_summary, summaryParseOptions)}</div>
           <div className={styles.meta}>
             <span className={`${styles.badge} ${badgeClass}`}>{badgeLabel}</span>
             <span className={styles.instrument}>{article.instrument.replace("_", "/")}</span>
@@ -88,7 +93,7 @@ export default function ArticleCarousel() {
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
-        <span className={styles.counter}>{index + 1} / {articles.length}</span>
+        <span className={styles.counter}>{index + 1} / {trades.length}</span>
         <button className={styles.navBtn} onClick={next} aria-label="Next">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 18l6-6-6-6" />
