@@ -75,7 +75,7 @@ export default async function TradePage({
         </div>
 
         {trade.trade_status !== "open" && trade.lesson_learned && (
-          <div className={`${styles.lesson} ${trade.trade_status === "skipped" ? styles.lessonNeutral : trade.is_good_trade ? styles.lessonGood : styles.lessonBad}`}>
+          <div className={`${styles.lesson} ${trade.is_successful == null ? styles.lessonNeutral : trade.is_successful ? styles.lessonGood : styles.lessonBad}`}>
             <p className={styles.sectionLabel}>Lesson Learned</p>
             <p className={styles.lessonBody}>{trade.lesson_learned}</p>
           </div>

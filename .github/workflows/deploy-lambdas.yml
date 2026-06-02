@@ -18,6 +18,8 @@ jobs:
             function_name_secret: ANALYSIS_TRADING_LAMBDA_NAME
           - dir: ai-trade-checker
             function_name_secret: AI_TRADE_CHECKER_LAMBDA_NAME
+          - dir: reset-daily-ai-trading-values-lambda
+            function_name_secret: RESET_DAILY_AI_TRADING_VALUES_LAMBDA_NAME
 
     steps:
       - uses: actions/checkout@v4

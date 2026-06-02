@@ -5,7 +5,7 @@ import styles from "./OngoingTrades.module.css";
 import TradeCard from "@/lib/components/TradeCard/TradeCard";
 import { Trade } from "@/lib/types";
 
-const POLL_INTERVAL_MS = 15_000;
+const POLL_INTERVAL_MS = 5_000;
 
 export default function LiveTradesRow({ trades }: { trades: Trade[] }) {
   const [liveData, setLiveData] = useState<Record<string, number>>({});
