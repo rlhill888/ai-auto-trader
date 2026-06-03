@@ -56,3 +56,9 @@
   color: #aeaeb2;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 16px 16px 4px;
+  }
+}
+

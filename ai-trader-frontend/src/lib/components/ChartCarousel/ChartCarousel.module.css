@@ -28,3 +28,15 @@
   font-size: 13px;
   color: #aeaeb2;
 }
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px 16px 12px;
+    height: auto;
+  }
+
+  .placeholder {
+    flex: none;
+    min-height: 100px;
+  }
+}

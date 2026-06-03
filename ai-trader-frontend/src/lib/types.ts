@@ -19,7 +19,7 @@ export type Trade = {
   timestamp: string;
   oanda_order_id: string;
   oanda_trade_id: string;
-  trade_status: "open" | "closed" | "skipped";
+  trade_status: "open" | "closed" | "skipped" | "already_in_trade";
   is_successful?: boolean;
   profit_loss?: number;
   exit_price?: number;

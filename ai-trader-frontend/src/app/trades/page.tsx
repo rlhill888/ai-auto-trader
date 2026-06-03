@@ -5,7 +5,7 @@ import styles from "./page.module.css";
 
 export default async function TradesPage() {
   const trades: Trade[] = await getTrades();
-
+  console.log(trades)
   return (
     <main style={{ minHeight: "100vh" }}>
       <div className={styles.container}>
@@ -34,7 +34,7 @@ export default async function TradesPage() {
                 : styles.statusSkipped;
 
             const outcomeClass =
-              trade.trade_status === "skipped"
+              trade.trade_status === "skipped" || trade.trade_status === "already_in_trade"
                 ? ""
                 : trade.is_good_trade
                 ? styles.good
@@ -51,14 +51,14 @@ export default async function TradesPage() {
                     <span className={styles.instrument}>
                       {trade.instrument.replace("_", "/")}
                     </span>
-                    {trade.trade_status === "skipped" ? (
+                    {trade.trade_status === "skipped" || trade.trade_status === "already_in_trade" ? (
                       <span className={styles.skipped}>Trade Skipped</span>
                     ) : (
                       <span className={`${styles.direction} ${trade.direction === "buy" ? styles.buy : styles.sell}`}>
                         {trade.direction}
                       </span>
                     )}
-                    {trade.trade_status !== "skipped" && (
+                    {trade.trade_status !== "skipped" && trade.trade_status !== "already_in_trade" && (
                       <span className={`${styles.status} ${statusClass}`}>
                         {trade.trade_status}
                       </span>

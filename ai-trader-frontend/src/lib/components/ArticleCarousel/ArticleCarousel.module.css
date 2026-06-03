@@ -146,3 +146,11 @@
   font-size: 11px;
   color: #aeaeb2;
 }
+
+@media (max-width: 768px) {
+  .container {
+    overflow-y: auto;
+    height: 50vh;
+    padding: 12px 16px 16px;
+  }
+}

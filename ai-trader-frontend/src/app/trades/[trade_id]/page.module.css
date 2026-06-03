@@ -346,3 +346,35 @@
 .divider {
   display: none;
 }
+
+@media (max-width: 768px) {
+  .container {
+    padding: 32px 16px 48px;
+  }
+
+  .topBar {
+    margin-bottom: 24px;
+  }
+
+  .title {
+    font-size: 20px;
+    letter-spacing: -0.4px;
+  }
+
+  .card {
+    padding: 16px 18px;
+  }
+
+  .lesson {
+    padding: 16px 18px;
+  }
+
+  .confidenceValue {
+    font-size: 28px;
+    letter-spacing: -1px;
+  }
+
+  .header {
+    margin-bottom: 24px;
+  }
+}

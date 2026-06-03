@@ -4,32 +4,33 @@ import ChartCarousel from "@/lib/components/ChartCarousel/ChartCarousel";
 import ClosedTrades from "@/lib/components/ClosedTrades/ClosedTrades";
 import ArticleCarousel from "@/lib/components/ArticleCarousel/ArticleCarousel";
 import { getTrades } from "@/lib/api";
+import styles from "./page.module.css";
 
 export default async function Home() {
   const trades = await getTrades();
 
   return (
-    <main style={{ color: "#000000", height: "100vh", overflow: "hidden", display: "flex" }}>
+    <main className={styles.main}>
 
       {/* Left — fills height, sections split vertically */}
-      <div style={{ width: "75%", borderRight: "1px solid #d2d2d7", height: "100%", display: "flex", flexDirection: "column" }}>
-        <div style={{ flexShrink: 0, borderBottom: "1px solid #d2d2d7" }}>
+      <div className={styles.left}>
+        <div className={styles.leftTop}>
           <AccountSummary />
         </div>
-        <div style={{ flex: 1, minHeight: 0, borderBottom: "1px solid #d2d2d7" }}>
+        <div className={styles.leftMid}>
           <OngoingTrades />
         </div>
-        <div style={{ flex: 1, minHeight: 0 }}>
+        <div className={styles.leftBot}>
           <ClosedTrades />
         </div>
       </div>
 
       {/* Right — sticky sidebar, fills height */}
-      <div style={{ width: "25%", height: "100%", overflowY: "auto", display: "flex", flexDirection: "column" }}>
-        <div style={{ flex: 1, minHeight: 0 }}>
+      <div className={styles.right}>
+        <div className={styles.rightTop}>
           <ChartCarousel />
         </div>
-        <div style={{ flexShrink: 0 }}>
+        <div className={styles.rightBot}>
           <ArticleCarousel trades={trades} />
         </div>
       </div>

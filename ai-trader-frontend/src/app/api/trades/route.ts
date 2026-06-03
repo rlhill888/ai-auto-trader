@@ -13,7 +13,6 @@ export async function GET(req: Request) {
   if (status) query = query.eq("trade_status", status);
 
   const { data, error } = await query;
-  console.log("data", data)
 
   if (error) {
     console.log(error);

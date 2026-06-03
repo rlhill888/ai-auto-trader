@@ -1,0 +1,81 @@
+.main {
+  color: #000000;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+}
+
+.left {
+  width: 75%;
+  border-right: 1px solid #d2d2d7;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.leftTop {
+  flex-shrink: 0;
+  border-bottom: 1px solid #d2d2d7;
+}
+
+.leftMid {
+  flex: 1;
+  min-height: 0;
+  border-bottom: 1px solid #d2d2d7;
+}
+
+.leftBot {
+  flex: 1;
+  min-height: 0;
+}
+
+.right {
+  width: 25%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.rightTop {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rightBot {
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .main {
+    height: auto;
+    overflow: visible;
+    flex-direction: column;
+  }
+
+  .left {
+    width: 100%;
+    height: auto;
+    border-right: none;
+  }
+
+  .leftMid {
+    flex: none;
+    height: auto;
+  }
+
+  .leftBot {
+    flex: none;
+    height: auto;
+  }
+
+  .right {
+    width: 100%;
+    height: auto;
+    overflow-y: visible;
+    border-top: 1px solid #d2d2d7;
+  }
+
+
+}

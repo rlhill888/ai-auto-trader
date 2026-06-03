@@ -57,15 +57,15 @@ export default function ArticleCarousel({ trades }: { trades: Trade[] }) {
     minute: "2-digit",
   });
 
-  const badgeClass =
-    article.trade_status === "skipped"
-      ? styles.skipped
-      : article.direction === "buy"
-      ? styles.buy
-      : styles.sell;
+  const isSkipped = article.trade_status === "skipped" || article.direction === "ALREADY_IN_TRADE";
 
-  const badgeLabel =
-    article.trade_status === "skipped" ? "skipped" : article.direction;
+  const badgeClass = isSkipped
+    ? styles.skipped
+    : article.direction === "buy"
+    ? styles.buy
+    : styles.sell;
+
+  const badgeLabel = isSkipped ? "skipped" : article.direction;
 
   return (
     <div className={styles.container}>

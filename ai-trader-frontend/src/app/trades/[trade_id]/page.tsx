@@ -42,7 +42,7 @@ export default async function TradePage({
           <p className={styles.instrument}>{trade.instrument.replace("_", "/")}</p>
           <h1 className={styles.title}>{trade.article_title}</h1>
           <div className={styles.meta}>
-            {trade.trade_status === "skipped" ? (
+            {trade.trade_status === "skipped" || trade.trade_status === "already_in_trade" ? (
               <span className={styles.skipped}>Trade Skipped</span>
             ) : (
               <span className={`${styles.direction} ${trade.direction === "buy" ? styles.buy : styles.sell}`}>
@@ -76,7 +76,14 @@ export default async function TradePage({
 
         <div className={styles.card}>
           <p className={styles.sectionLabel}>AI Reasoning</p>
-          <p className={styles.body}>{trade.reasoning}</p>
+          {
+            trade.trade_status === "already_in_trade" ?
+
+              <p className={styles.body}>This trade was skipped because an existing position in this instrument was already open at the time of analysis.</p>
+              :
+              <p className={styles.body}>{trade.reasoning}</p>
+          }
+
         </div>
 
         <div className={styles.card}>
