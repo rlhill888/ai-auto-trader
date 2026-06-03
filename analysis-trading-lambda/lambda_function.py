@@ -27,6 +27,11 @@ def lambda_handler(event, context):
         risk_amount = round(nav * 0.005, 2)
 
         try:
+            article_id = article.get("id", "")
+            if article_already_traded(article_id):
+                logger.info("Record %d: article already traded, skipping | article_id=%s", index, article_id)
+                continue
+
             analysis = analyze_article(article, risk_amount)
             logger.info(
                 "Record %d: analysis complete | is_good_trade=%s | instrument=%s | direction=%s | confidence=%.2f",
@@ -41,17 +46,19 @@ def lambda_handler(event, context):
                 instrument = analysis["instrument"]
                 direction = analysis["direction"]
 
-                article_id = article.get("id", "")
                 if article_already_traded(article_id):
                     logger.info("Record %d: article already traded, skipping | article_id=%s", index, article_id)
+                    store_trade_decision(article, analysis, units=0, skipped_reason="already_traded")
                     continue
 
                 if instrument in traded_this_batch:
                     logger.info("Record %d: instrument already traded in this batch, skipping | instrument=%s", index, instrument)
+                    store_trade_decision(article, analysis, units=0, skipped_reason="already_in_trade")
                     continue
 
                 if has_open_position(instrument):
                     logger.info("Record %d: open position already exists, skipping | instrument=%s", index, instrument)
+                    store_trade_decision(article, analysis, units=0, skipped_reason="already_in_trade")
                     continue
 
                 pip_size = get_pip_size(instrument)

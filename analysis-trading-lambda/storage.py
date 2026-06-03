@@ -53,7 +53,7 @@ def article_already_traded(article_id: str) -> bool:
     return False
 
 
-def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_id: str = None, oanda_trade_id: str = None) -> None:
+def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_id: str = None, oanda_trade_id: str = None, skipped_reason: str = None) -> None:
     global _conn
 
     sql = """
@@ -65,6 +65,13 @@ def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_
             %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
         )
     """
+
+    if oanda_order_id:
+        trade_status = "open"
+    elif skipped_reason:
+        trade_status = skipped_reason
+    else:
+        trade_status = "skipped"
 
     values = (
         str(uuid.uuid4()),
@@ -80,7 +87,7 @@ def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_
         datetime.now(timezone.utc),
         oanda_order_id or "",
         oanda_trade_id or "",
-        "open" if oanda_order_id else "skipped",
+        trade_status,
     )
 
     for attempt in range(2):
