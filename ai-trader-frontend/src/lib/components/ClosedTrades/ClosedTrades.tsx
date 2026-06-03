@@ -1,18 +1,29 @@
+"use client";
+
+import { useCallback, useState } from "react";
 import styles from "./ClosedTrades.module.css";
 import TradeCard from "@/lib/components/TradeCard/TradeCard";
-import { getTrades } from "@/lib/api";
+import { useAblyChannel } from "@/lib/useAblyChannel";
+import { Trade } from "@/lib/types";
 
-export default async function ClosedTrades() {
-  const closedTrades = await getTrades("closed");
+export default function ClosedTrades({ initialTrades }: { initialTrades: Trade[] }) {
+  const [trades, setTrades] = useState(initialTrades);
+
+  const refetch = useCallback(async () => {
+    const res = await fetch("/api/trades?status=closed");
+    if (res.ok) setTrades(await res.json());
+  }, []);
+
+  useAblyChannel("trading", "trade.closed", refetch);
 
   return (
     <section className={styles.container}>
       <p className={styles.title}>Past Closed Trades</p>
-      {closedTrades.length === 0 ? (
+      {trades.length === 0 ? (
         <p className={styles.empty}>No closed trades yet.</p>
       ) : (
         <div className={styles.row}>
-          {closedTrades.map((trade) => (
+          {trades.map((trade) => (
             <TradeCard key={trade.trade_id} trade={trade} />
           ))}
         </div>

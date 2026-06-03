@@ -1,6 +1,7 @@
 import json
 import logging
 
+from ably_publisher import publish_ably_event
 from dynamodb import update_daily_money_made
 from lesson import generate_lesson_learned
 from oanda import get_trade_state
@@ -40,6 +41,11 @@ def lambda_handler(event, context):
                     profit_loss=profit_loss,
                     closed_at=closed_at,
                 )
+                publish_ably_event("trade.closed", {
+                    "trade_id": trade_id,
+                    "profit_loss": profit_loss,
+                    "is_successful": profit_loss > 0,
+                })
 
                 logger.info(
                     "Trade marked closed | trade_id=%s | oanda_trade_id=%s | exit_price=%.5f | profit_loss=%.2f",

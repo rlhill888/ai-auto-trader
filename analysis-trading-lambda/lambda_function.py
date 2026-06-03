@@ -1,6 +1,7 @@
 import json
 import logging
 
+from ably_publisher import publish_ably_event
 from analysis import analyze_article
 from oanda import calculate_stop_price, calculate_take_profit_price, calculate_units, execute_trade, get_account_nav, get_current_price, get_pip_size, has_open_position
 from storage import store_trade_decision, article_already_traded
@@ -81,6 +82,11 @@ def lambda_handler(event, context):
                 )
                 traded_this_batch.add(instrument)
                 store_trade_decision(article, analysis, units=units, oanda_order_id=oanda_order_id, oanda_trade_id=oanda_trade_id)
+                publish_ably_event("trade.opened", {
+                    "instrument": instrument,
+                    "direction": direction,
+                    "units": units,
+                })
                 logger.info(
                     "TRADE EXECUTED | record=%d | direction=%s | units=%d | instrument=%s | stop=%s | order_id=%s | trade_id=%s",
                     index, direction, units, instrument, stop_loss_price, oanda_order_id, oanda_trade_id,

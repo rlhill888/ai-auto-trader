@@ -7,7 +7,11 @@ import { getTrades } from "@/lib/api";
 import styles from "./page.module.css";
 
 export default async function Home() {
-  const trades = await getTrades();
+  const [allTrades, openTrades, closedTrades] = await Promise.all([
+    getTrades(),
+    getTrades("open"),
+    getTrades("closed"),
+  ]);
 
   return (
     <main className={styles.main}>
@@ -18,10 +22,10 @@ export default async function Home() {
           <AccountSummary />
         </div>
         <div className={styles.leftMid}>
-          <OngoingTrades />
+          <OngoingTrades initialTrades={openTrades} />
         </div>
         <div className={styles.leftBot}>
-          <ClosedTrades />
+          <ClosedTrades initialTrades={closedTrades} />
         </div>
       </div>
 
@@ -31,7 +35,7 @@ export default async function Home() {
           <ChartCarousel />
         </div>
         <div className={styles.rightBot}>
-          <ArticleCarousel trades={trades} />
+          <ArticleCarousel trades={allTrades} />
         </div>
       </div>
 

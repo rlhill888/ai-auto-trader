@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import styles from "./ArticleCarousel.module.css";
 import { Trade } from "@/lib/types";
 import parse, { domToReact, DOMNode, Element } from "html-react-parser";
+import { useAblyChannel } from "@/lib/useAblyChannel";
 
 const summaryParseOptions = {
   replace(node: DOMNode) {
@@ -16,8 +17,16 @@ const summaryParseOptions = {
 
 const INTERVAL_MS = 4000;
 
-export default function ArticleCarousel({ trades }: { trades: Trade[] }) {
+export default function ArticleCarousel({ trades: initialTrades }: { trades: Trade[] }) {
+  const [trades, setTrades] = useState(initialTrades);
   const [index, setIndex] = useState(0);
+
+  const refetch = useCallback(async () => {
+    const res = await fetch("/api/trades");
+    if (res.ok) setTrades(await res.json());
+  }, []);
+
+  useAblyChannel("trading", "trade.opened", refetch);
   const [direction, setDirection] = useState<"right" | "left">("right");
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
