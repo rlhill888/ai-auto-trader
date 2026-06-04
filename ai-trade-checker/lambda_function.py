@@ -42,7 +42,7 @@ def lambda_handler(event, context):
                     closed_at=closed_at,
                 )
                 publish_ably_event("trade.closed", {
-                    "trade_id": trade_id,
+                    "trade_id": str(trade_id),
                     "profit_loss": profit_loss,
                     "is_successful": profit_loss > 0,
                 })
