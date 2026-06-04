@@ -34,7 +34,6 @@ export function useAblyChannel(
   useEffect(() => {
     const channel = getClient().channels.get(channelName);
 
-    // Monitor channel state for debugging
     const attachedHandler = (stateChange: Ably.ChannelStateChange) => {
       console.log(`[Ably] Channel "${channelName}" attached. Resumed: ${stateChange.resumed}`);
     };
@@ -43,8 +42,18 @@ export function useAblyChannel(
       console.error(`[Ably] Channel "${channelName}" failed:`, stateChange.reason);
     };
 
+    // DEBUG: Catch ALL messages on this channel
+    const debugListener = (msg: Ably.Message) => {
+      console.log(`[Ably DEBUG] ANY message on "${channelName}":`, {
+        name: msg.name,
+        data: msg.data,
+        timestamp: msg.timestamp
+      });
+    };
+
     channel.on('attached', attachedHandler);
     channel.on('failed', failedHandler);
+    channel.subscribe(debugListener); // Subscribe to ALL events
 
     const listener = (msg: Ably.Message) => {
       console.log(`[Ably] Message received on channel="${channelName}" event="${eventName}"`, msg.data);
@@ -57,6 +66,7 @@ export function useAblyChannel(
     return () => {
       console.log(`[Ably] Unsubscribing from channel="${channelName}" event="${eventName}"`);
       channel.unsubscribe(eventName, listener);
+      channel.unsubscribe(debugListener);
       channel.off('attached', attachedHandler);
       channel.off('failed', failedHandler);
     };
