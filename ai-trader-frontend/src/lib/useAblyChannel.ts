@@ -8,17 +8,13 @@ let client: Ably.Realtime | null = null;
 function getClient(): Ably.Realtime {
   if (!client) {
     console.log("[Ably] Creating new Realtime client");
-    client = new Ably.Realtime({ authUrl: "/api/ably/token" });
+    client = new Ably.Realtime({ 
+      authUrl: "/api/ably/token",
+      autoConnect: true
+    });
 
     client.connection.on((stateChange) => {
       console.log(`[Ably] Connection state: ${stateChange.current}`, stateChange.reason ?? "");
-    });
-
-    client.connection.on("connected", () => {
-      console.log("[Ably] Connected. Connection ID:", client!.connection.id);
-      client!.channels.get("trading").subscribe((msg) => {
-        console.log("[Ably ROOT]", msg.name, msg.data);
-      });
     });
   }
   return client;
