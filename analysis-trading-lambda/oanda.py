@@ -108,6 +108,8 @@ def execute_trade(instrument: str, direction: str, units: int, stop_loss_price: 
 
     response = requests.post(url, json=payload, headers=headers, timeout=10)
     logger.debug("POST %s -> HTTP %s", url, response.status_code)
+    if not response.ok:
+        logger.error("OANDA error response: %s", response.text)
     response.raise_for_status()
 
     data = response.json()
