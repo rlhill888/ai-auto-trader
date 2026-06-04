@@ -6,9 +6,10 @@ type Props = {
   trade: Trade;
   live?: boolean;
   liveData?: LiveTradeData | null;
+  isNew?: boolean;
 };
 
-export default function TradeCard({ trade, live = false, liveData = null }: Props) {
+export default function TradeCard({ trade, live = false, liveData = null, isNew = false }: Props) {
   const unrealizedPl = liveData?.unrealizedPl ?? null;
 
   const pipSize = trade.instrument.includes("JPY") ? 0.01 : 0.0001;
@@ -30,7 +31,7 @@ export default function TradeCard({ trade, live = false, liveData = null }: Prop
   });
 
   return (
-    <Link href={`/trades/${trade.trade_id}`} className={styles.card}>
+    <Link href={`/trades/${trade.trade_id}`} className={`${styles.card}${isNew ? ` ${styles.flash}` : ""}`}>
       <div className={styles.header}>
         <span className={`${styles.instrument} ${trade.trade_status === "closed" && trade.is_successful != null ? (trade.is_successful ? styles.instrumentSuccess : styles.instrumentFail) : ""}`}>
           {trade.instrument.replace("_", "/")}

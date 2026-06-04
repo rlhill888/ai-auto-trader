@@ -7,7 +7,7 @@ import { Trade, LiveTradeData } from "@/lib/types";
 
 const POLL_INTERVAL_MS = 10_000;
 
-export default function LiveTradesRow({ trades }: { trades: Trade[] }) {
+export default function LiveTradesRow({ trades, flashIds }: { trades: Trade[]; flashIds: Set<string> }) {
   const [liveData, setLiveData] = useState<Record<string, LiveTradeData>>({});
 
   useEffect(() => {
@@ -31,6 +31,7 @@ export default function LiveTradesRow({ trades }: { trades: Trade[] }) {
           trade={trade}
           live
           liveData={liveData[trade.oanda_trade_id] ?? null}
+          isNew={flashIds.has(trade.trade_id)}
         />
       ))}
     </div>
