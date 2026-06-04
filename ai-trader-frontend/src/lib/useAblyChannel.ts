@@ -23,15 +23,19 @@ export function useAblyChannel(
   onMessage: (msg: Ably.Message) => void
 ) {
   useEffect(() => {
-    console.log(`[Ably] Subscribing to channel="${channelName}" event="${eventName}"`);
     const channel = getClient().channels.get(channelName);
-    channel.subscribe(eventName, (msg) => {
+
+    const listener = (msg: Ably.Message) => {
       console.log(`[Ably] Message received on channel="${channelName}" event="${eventName}"`, msg.data);
       onMessage(msg);
-    });
+    };
+
+    console.log(`[Ably] Subscribing to channel="${channelName}" event="${eventName}"`);
+    channel.subscribe(eventName, listener);
+
     return () => {
       console.log(`[Ably] Unsubscribing from channel="${channelName}" event="${eventName}"`);
-      channel.unsubscribe(eventName, onMessage);
+      channel.unsubscribe(eventName, listener);
     };
   }, [channelName, eventName, onMessage]);
 }
