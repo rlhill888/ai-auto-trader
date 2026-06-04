@@ -13,6 +13,13 @@ function getClient(): Ably.Realtime {
     client.connection.on((stateChange) => {
       console.log(`[Ably] Connection state: ${stateChange.current}`, stateChange.reason ?? "");
     });
+
+    client.connection.on("connected", () => {
+      console.log("[Ably] Connected. Connection ID:", client!.connection.id);
+      client!.channels.get("trading").subscribe((msg) => {
+        console.log("[Ably ROOT]", msg.name, msg.data);
+      });
+    });
   }
   return client;
 }
@@ -29,6 +36,10 @@ export function useAblyChannel(
       console.log(`[Ably] Message received on channel="${channelName}" event="${eventName}"`, msg.data);
       onMessage(msg);
     };
+
+    channel.subscribe((msg) => {
+      console.log(`[Ably] ANY MESSAGE on channel="${channelName}"`, msg.name, msg.data);
+    });
 
     console.log(`[Ably] Subscribing to channel="${channelName}" event="${eventName}"`);
     channel.subscribe(eventName, listener);

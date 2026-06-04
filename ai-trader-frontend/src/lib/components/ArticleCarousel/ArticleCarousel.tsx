@@ -23,7 +23,11 @@ export default function ArticleCarousel({ trades: initialTrades }: { trades: Tra
 
   const refetch = useCallback(async () => {
     const res = await fetch("/api/trades");
-    if (res.ok) setTrades(await res.json());
+    if (res.ok) {
+      const next = await res.json();
+      setTrades(next);
+      setIndex((i) => (next.length === 0 ? 0 : Math.min(i, next.length - 1)));
+    }
   }, []);
 
   useAblyChannel("trading", "trade.opened", refetch);
