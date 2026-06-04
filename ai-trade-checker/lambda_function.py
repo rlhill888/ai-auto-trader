@@ -53,6 +53,7 @@ def lambda_handler(event, context):
                 )
 
                 update_daily_money_made(profit_loss)
+                publish_ably_event("stats.updated", {})
 
                 try:
                     lesson = generate_lesson_learned(trade, exit_price, profit_loss)

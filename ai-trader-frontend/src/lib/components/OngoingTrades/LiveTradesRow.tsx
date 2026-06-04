@@ -9,6 +9,7 @@ const POLL_INTERVAL_MS = 10_000;
 
 export default function LiveTradesRow({ trades, flashIds }: { trades: Trade[]; flashIds: Set<string> }) {
   const [liveData, setLiveData] = useState<Record<string, LiveTradeData>>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchLive() {
@@ -16,6 +17,7 @@ export default function LiveTradesRow({ trades, flashIds }: { trades: Trade[]; f
         const res = await fetch("/api/trades/live");
         if (res.ok) setLiveData(await res.json());
       } catch {}
+      setLoading(false);
     }
 
     fetchLive();
@@ -30,6 +32,7 @@ export default function LiveTradesRow({ trades, flashIds }: { trades: Trade[]; f
           key={trade.trade_id}
           trade={trade}
           live
+          liveLoading={loading}
           liveData={liveData[trade.oanda_trade_id] ?? null}
           isNew={flashIds.has(trade.trade_id)}
         />

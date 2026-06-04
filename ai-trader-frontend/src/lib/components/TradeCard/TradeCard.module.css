@@ -14,6 +14,48 @@
   scroll-snap-align: start;
 }
 
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.skeletonPill {
+  display: inline-block;
+  width: 48px;
+  height: 14px;
+  border-radius: 6px;
+  background: #e5e5ea;
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+.skeletonProgress {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.skeletonProgressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skeletonChip {
+  display: inline-block;
+  height: 10px;
+  border-radius: 5px;
+  background: #e5e5ea;
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
+.skeletonTrack {
+  height: 6px;
+  border-radius: 4px;
+  margin: 3px 0 2px;
+  background: #e5e5ea;
+  animation: skeletonPulse 1.4s ease-in-out infinite;
+}
+
 @keyframes flashBlue {
   0% {
     background: rgba(0, 122, 255, 0.1);

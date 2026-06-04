@@ -5,11 +5,12 @@ import { Trade, LiveTradeData } from "@/lib/types";
 type Props = {
   trade: Trade;
   live?: boolean;
+  liveLoading?: boolean;
   liveData?: LiveTradeData | null;
   isNew?: boolean;
 };
 
-export default function TradeCard({ trade, live = false, liveData = null, isNew = false }: Props) {
+export default function TradeCard({ trade, live = false, liveLoading = false, liveData = null, isNew = false }: Props) {
   const unrealizedPl = liveData?.unrealizedPl ?? null;
 
   const pipSize = trade.instrument.includes("JPY") ? 0.01 : 0.0001;
@@ -47,10 +48,13 @@ export default function TradeCard({ trade, live = false, liveData = null, isNew 
             {trade.profit_loss >= 0 ? "+$" : "-$"}{Math.abs(trade.profit_loss).toFixed(2)}
           </span>
         )}
-        {live && unrealizedPl != null && (
-          <span className={unrealizedPl >= 0 ? styles.plPositive : styles.plNegative}>
-            {unrealizedPl >= 0 ? "+$" : "-$"}{Math.abs(unrealizedPl).toFixed(2)}
-          </span>
+        {live && (liveLoading
+          ? <span className={styles.skeletonPill} />
+          : unrealizedPl != null && (
+              <span className={unrealizedPl >= 0 ? styles.plPositive : styles.plNegative}>
+                {unrealizedPl >= 0 ? "+$" : "-$"}{Math.abs(unrealizedPl).toFixed(2)}
+              </span>
+            )
         )}
       </div>
 
@@ -58,7 +62,20 @@ export default function TradeCard({ trade, live = false, liveData = null, isNew 
         {trade.direction}
       </span>
 
-      {live && canShowBar && entryPct != null && markerPct != null && (
+      {live && liveLoading && (
+        <div className={styles.skeletonProgress}>
+          <div className={styles.skeletonProgressHeader}>
+            <span className={styles.skeletonChip} style={{ width: 72 }} />
+            <span className={styles.skeletonChip} style={{ width: 48 }} />
+          </div>
+          <div className={styles.skeletonTrack} />
+          <div className={styles.skeletonProgressHeader}>
+            <span className={styles.skeletonChip} style={{ width: 18 }} />
+            <span className={styles.skeletonChip} style={{ width: 18 }} />
+          </div>
+        </div>
+      )}
+      {live && !liveLoading && canShowBar && entryPct != null && markerPct != null && (
         <div className={styles.liveProgress}>
           <div className={styles.liveProgressHeader}>
             <span className={styles.rowLabel}>Entry {liveData.entryPrice.toFixed(trade.instrument.includes("JPY") ? 3 : 5)}</span>
