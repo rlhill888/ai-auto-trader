@@ -2,9 +2,9 @@ import json
 import logging
 
 from ably_publisher import publish_ably_event
-from analysis import analyze_article
-from oanda import calculate_stop_price, calculate_take_profit_price, calculate_units, execute_trade, get_account_nav, get_current_price, get_pip_size, has_open_position
-from storage import store_trade_decision, article_already_traded
+from analysis import analyze_article, analyze_early_exit
+from oanda import calculate_stop_price, calculate_take_profit_price, calculate_units, close_trade, execute_trade, get_account_nav, get_current_price, get_pip_size, has_open_position
+from storage import store_trade_decision, article_already_traded, get_open_trade_for_instrument, mark_trade_exited_early
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -58,9 +58,44 @@ def lambda_handler(event, context):
                     continue
 
                 if has_open_position(instrument):
-                    logger.info("Record %d: open position already exists, skipping | instrument=%s", index, instrument)
-                    store_trade_decision(article, analysis, units=0, skipped_reason="already_in_trade")
-                    continue
+                    current_trade_db = get_open_trade_for_instrument(instrument)
+
+                    if current_trade_db is None or current_trade_db["direction"] == direction:
+                        logger.info("Record %d: open position already exists (same direction), skipping | instrument=%s", index, instrument)
+                        store_trade_decision(article, analysis, units=0, skipped_reason="already_in_trade")
+                        continue
+
+                    logger.info(
+                        "Record %d: open position exists in OPPOSITE direction, running early-exit analysis | instrument=%s | current=%s | new=%s",
+                        index, instrument, current_trade_db["direction"], direction,
+                    )
+                    exit_decision = analyze_early_exit(current_trade_db, analysis, article)
+                    logger.info(
+                        "Record %d: early exit decision | should_exit=%s | reason=%s",
+                        index, exit_decision.get("should_exit"), exit_decision.get("reason"),
+                    )
+
+                    if not exit_decision.get("should_exit"):
+                        store_trade_decision(article, analysis, units=0, skipped_reason="already_in_trade")
+                        continue
+
+                    close_result = close_trade(current_trade_db["oanda_trade_id"])
+                    mark_trade_exited_early(
+                        current_trade_db["trade_id"],
+                        exit_decision["reason"],
+                        close_result["exit_price"],
+                        close_result["profit_loss"],
+                    )
+                    publish_ably_event("trade.exited_early", {
+                        "instrument": instrument,
+                        "reason": exit_decision["reason"],
+                        "profit_loss": close_result["profit_loss"],
+                    })
+                    logger.info(
+                        "Record %d: TRADE EXITED EARLY | instrument=%s | exit_price=%.5f | pl=%.2f | reason=%s",
+                        index, instrument, close_result["exit_price"], close_result["profit_loss"], exit_decision["reason"],
+                    )
+                    # Fall through to open the new trade in the opposite direction
 
                 pip_size = get_pip_size(instrument)
                 units = calculate_units(nav, pip_size)

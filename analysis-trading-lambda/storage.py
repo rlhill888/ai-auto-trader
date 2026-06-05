@@ -53,6 +53,75 @@ def article_already_traded(article_id: str) -> bool:
     return False
 
 
+def get_open_trade_for_instrument(instrument: str) -> dict | None:
+    global _conn
+    sql = """
+        SELECT trade_id, article_title, article_summary, direction, reasoning, confidence, oanda_trade_id
+        FROM trade_decisions
+        WHERE instrument = %s AND trade_status = 'open'
+        ORDER BY timestamp DESC
+        LIMIT 1
+    """
+    for attempt in range(2):
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute(sql, (instrument,))
+                row = cursor.fetchone()
+                if row is None:
+                    return None
+                return {
+                    "trade_id": str(row[0]),
+                    "article_title": row[1],
+                    "article_summary": row[2],
+                    "direction": row[3],
+                    "reasoning": row[4],
+                    "confidence": float(row[5]),
+                    "oanda_trade_id": row[6],
+                }
+            finally:
+                cursor.close()
+        except Exception as e:
+            print(f"Database error getting open trade (attempt {attempt + 1}): {e}")
+            _conn = None
+            if attempt == 1:
+                raise
+    return None
+
+
+def mark_trade_exited_early(trade_id: str, reason: str, exit_price: float, profit_loss: float) -> None:
+    global _conn
+    sql = """
+        UPDATE trade_decisions
+        SET trade_status = 'closed',
+            left_trade_early = TRUE,
+            reason_for_leaving_trade_early = %s,
+            exit_price = %s,
+            profit_loss = %s,
+            closed_at = NOW(),
+            is_successful = %s
+        WHERE trade_id = %s
+    """
+    is_successful = profit_loss > 0
+    for attempt in range(2):
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute(sql, (reason, exit_price, profit_loss, is_successful, trade_id))
+                conn.commit()
+            finally:
+                cursor.close()
+            print(f"Marked trade as exited early | trade_id={trade_id}")
+            return
+        except Exception as e:
+            print(f"Database error marking early exit (attempt {attempt + 1}): {e}")
+            _conn = None
+            if attempt == 1:
+                raise
+
+
 def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_id: str = None, oanda_trade_id: str = None, skipped_reason: str = None) -> None:
     global _conn
 

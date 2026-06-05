@@ -75,6 +75,24 @@ def has_open_position(instrument: str) -> bool:
     return any(p["instrument"] == instrument for p in positions)
 
 
+def close_trade(oanda_trade_id: str) -> dict:
+    url = f"{OANDA_BASE_URL}/v3/accounts/{OANDA_ACCOUNT_ID}/trades/{oanda_trade_id}/close"
+    headers = {
+        "Authorization": f"Bearer {OANDA_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    logger.info("Closing trade early | trade_id=%s", oanda_trade_id)
+    response = requests.put(url, json={"units": "ALL"}, headers=headers, timeout=10)
+    if not response.ok:
+        logger.error("OANDA close trade error: %s", response.text)
+    response.raise_for_status()
+    order_fill = response.json().get("orderFillTransaction", {})
+    exit_price = float(order_fill.get("price", 0))
+    profit_loss = float(order_fill.get("pl", 0))
+    logger.info("Trade closed early | trade_id=%s | exit_price=%.5f | pl=%.2f", oanda_trade_id, exit_price, profit_loss)
+    return {"exit_price": exit_price, "profit_loss": profit_loss}
+
+
 def execute_trade(instrument: str, direction: str, units: int, stop_loss_price: str, take_profit_price: str) -> str:
     signed_units = units if direction == "buy" else -units
     payload = {
