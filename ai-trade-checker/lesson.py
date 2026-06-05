@@ -4,7 +4,7 @@ from config import OPENAI_API_KEY
 
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
-SYSTEM_PROMPT = """You are a forex trading coach reviewing completed trades. Given the details of a closed trade, write a concise lesson learned (2-4 sentences) that explains what worked, what didn't, and what should be done differently next time. Focus on actionable insights based on the trade outcome relative to the original reasoning and confidence level. If the trade was exited early, acknowledge that directly and factor the reason into the lesson."""
+SYSTEM_PROMPT = """You are a forex trading coach reviewing completed trades. Given the details of a closed trade, write a detailed lesson learned (4-6 sentences) covering: whether the original reasoning held up against the outcome, what the news signal got right or wrong, how the confidence level reflected the actual result, what the stop loss and take profit placement suggests about the trade setup, and one specific actionable takeaway for future trades of this type. If the trade was exited early, acknowledge that directly and factor the reason into the lesson."""
 
 
 def generate_lesson_learned(trade: dict, exit_price: float, profit_loss: float, left_trade_early: bool = False, early_exit_reason: str = None) -> str:
@@ -30,7 +30,7 @@ def generate_lesson_learned(trade: dict, exit_price: float, profit_loss: float, 
             {"role": "user", "content": user_message},
         ],
         temperature=0.4,
-        max_tokens=200,
+        max_tokens=500,
     )
 
     return response.choices[0].message.content.strip()
