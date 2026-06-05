@@ -14,15 +14,41 @@ export default function TradeCard({ trade, live = false, liveLoading = false, li
   const unrealizedPl = liveData?.unrealizedPl ?? null;
 
   const pipSize = trade.instrument.includes("JPY") ? 0.01 : 0.0001;
-  const pips = liveData ? liveData.unrealizedPl / (trade.units * pipSize) : null;
+  const isBuy = trade.direction === "buy";
 
-  const canShowBar = liveData?.slPrice != null && liveData?.tpPrice != null && liveData?.entryPrice != null && pips != null;
-  const SL_PIPS = canShowBar ? Math.abs(liveData!.entryPrice - liveData!.slPrice!) / pipSize : null;
-  const TP_PIPS = canShowBar ? Math.abs(liveData!.tpPrice! - liveData!.entryPrice) / pipSize : null;
-  const TOTAL_PIPS = SL_PIPS != null && TP_PIPS != null ? SL_PIPS + TP_PIPS : null;
-  const entryPct = TOTAL_PIPS != null && SL_PIPS != null ? (SL_PIPS / TOTAL_PIPS) * 100 : null;
-  const markerPct = entryPct != null && pips != null && TOTAL_PIPS != null
-    ? Math.max(0, Math.min(100, entryPct + (pips / TOTAL_PIPS) * 100))
+  const canShowBar = liveData?.slPrice != null && liveData?.tpPrice != null && liveData?.entryPrice != null;
+
+  // Derive current price from entry + P/L (P/L ≈ units × price_change for non-cross pairs)
+  const currentPrice = canShowBar
+    ? (isBuy
+        ? liveData!.entryPrice + liveData!.unrealizedPl / trade.units
+        : liveData!.entryPrice - liveData!.unrealizedPl / trade.units)
+    : null;
+
+  // Pip P/L from actual price movement
+  const pips = currentPrice != null
+    ? (isBuy ? currentPrice - liveData!.entryPrice : liveData!.entryPrice - currentPrice) / pipSize
+    : null;
+
+  // Bar: left=SL (bad), right=TP (good). Position using real price ratios.
+  // buy:  slPrice < entry < tpPrice  →  % = (price - sl) / (tp - sl)
+  // sell: tpPrice < entry < slPrice  →  % = (sl - price) / (sl - tp)
+  const priceToBarPct = (price: number) =>
+    isBuy
+      ? (price - liveData!.slPrice!) / (liveData!.tpPrice! - liveData!.slPrice!) * 100
+      : (liveData!.slPrice! - price) / (liveData!.slPrice! - liveData!.tpPrice!) * 100;
+
+  const entryPct = canShowBar ? priceToBarPct(liveData!.entryPrice) : null;
+  const markerPct = canShowBar && currentPrice != null
+    ? Math.max(0, Math.min(100, priceToBarPct(currentPrice)))
+    : null;
+
+  // Pips remaining until SL and TP
+  const pipsToSL = currentPrice != null
+    ? (isBuy ? currentPrice - liveData!.slPrice! : liveData!.slPrice! - currentPrice) / pipSize
+    : null;
+  const pipsToTP = currentPrice != null
+    ? (isBuy ? liveData!.tpPrice! - currentPrice : currentPrice - liveData!.tpPrice!) / pipSize
     : null;
   const formatted = new Date(trade.timestamp).toLocaleDateString("en-US", {
     month: "short",
@@ -75,7 +101,7 @@ export default function TradeCard({ trade, live = false, liveLoading = false, li
           </div>
         </div>
       )}
-      {live && !liveLoading && canShowBar && entryPct != null && markerPct != null && (
+      {live && !liveLoading && canShowBar && entryPct != null && markerPct != null && pips != null && pipsToSL != null && pipsToTP != null && (
         <div className={styles.liveProgress}>
           <div className={styles.liveProgressHeader}>
             <span className={styles.rowLabel}>Entry {liveData.entryPrice.toFixed(trade.instrument.includes("JPY") ? 3 : 5)}</span>
@@ -94,8 +120,8 @@ export default function TradeCard({ trade, live = false, liveLoading = false, li
             />
           </div>
           <div className={styles.tpSlLabels}>
-            <span>SL</span>
-            <span>TP</span>
+            <span>SL {pipsToSL.toFixed(1)}p</span>
+            <span>TP {pipsToTP.toFixed(1)}p</span>
           </div>
         </div>
       )}

@@ -114,11 +114,7 @@ def analyze_article(article: dict, risk_amount: float) -> dict:
     if analysis.get("confidence", 0) < 0.65:
         analysis["is_good_trade"] = False
 
-    sl = int(max(10, min(80, analysis.get("stop_loss_pips", 20))))
-    tp = int(max(15, min(200, analysis.get("take_profit_pips", 40))))
-    if tp < sl * 1.5:
-        tp = int(sl * 2)
-    analysis["stop_loss_pips"] = sl
-    analysis["take_profit_pips"] = tp
+    analysis["stop_loss_pips"] = int(analysis.get("stop_loss_pips", 20))
+    analysis["take_profit_pips"] = int(analysis.get("take_profit_pips", 40))
 
     return analysis
