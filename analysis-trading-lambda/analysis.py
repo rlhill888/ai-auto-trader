@@ -15,7 +15,7 @@ Respond with ONLY a valid JSON object (no markdown, no explanation) in this exac
   "is_good_trade": true or false,
   "instrument": "EUR_USD",
   "direction": "buy" or "sell",
-  "reasoning": "brief explanation of your decision",
+  "reasoning": "3-5 sentence explanation covering: what the news signal is, why it favors this direction and instrument, key risks to the trade, and why the chosen stop/take-profit levels suit this signal",
   "confidence": 0.85,
   "stop_loss_pips": 20,
   "take_profit_pips": 40
@@ -37,7 +37,7 @@ Consider: the confidence levels of both analyses, the quality of reasoning for e
 Respond with ONLY a valid JSON object (no markdown, no explanation) in this exact format:
 {
   "should_exit": true or false,
-  "reason": "brief explanation of your decision"
+  "reason": "3-5 sentence explanation covering: why the new signal contradicts the existing trade, the relative strength of both signals, what risk is being avoided or locked in by exiting, and why this decision was made over staying in the trade"
 }"""
 
 
@@ -68,7 +68,7 @@ def analyze_early_exit(current_trade: dict, new_analysis: dict, new_article: dic
             {"role": "user", "content": user_message},
         ],
         temperature=0.2,
-        max_tokens=200,
+        max_tokens=500,
     )
 
     raw = response.choices[0].message.content.strip()
@@ -99,7 +99,7 @@ def analyze_article(article: dict, risk_amount: float) -> dict:
             {"role": "user", "content": user_message},
         ],
         temperature=0.2,
-        max_tokens=300,
+        max_tokens=500,
     )
 
     raw = response.choices[0].message.content.strip()
