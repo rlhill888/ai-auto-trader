@@ -97,15 +97,17 @@ def lambda_handler(event, context):
                     )
                     # Fall through to open the new trade in the opposite direction
 
+                stop_loss_pips = analysis["stop_loss_pips"]
+                take_profit_pips = analysis["take_profit_pips"]
                 pip_size = get_pip_size(instrument)
-                units = calculate_units(nav, pip_size)
+                units = calculate_units(nav, pip_size, stop_loss_pips)
                 entry_price = get_current_price(instrument, direction)
-                stop_loss_price = calculate_stop_price(entry_price, direction, pip_size)
-                take_profit_price = calculate_take_profit_price(entry_price, direction, pip_size)
+                stop_loss_price = calculate_stop_price(entry_price, direction, pip_size, stop_loss_pips)
+                take_profit_price = calculate_take_profit_price(entry_price, direction, pip_size, take_profit_pips)
 
                 logger.info(
-                    "Trade sizing | nav=%.2f | units=%d | entry=%.5f | stop=%s | tp=%s",
-                    nav, units, entry_price, stop_loss_price, take_profit_price,
+                    "Trade sizing | nav=%.2f | units=%d | entry=%.5f | stop=%s | tp=%s | sl_pips=%d | tp_pips=%d",
+                    nav, units, entry_price, stop_loss_price, take_profit_price, stop_loss_pips, take_profit_pips,
                 )
 
                 oanda_order_id, oanda_trade_id = execute_trade(

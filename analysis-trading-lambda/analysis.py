@@ -8,7 +8,7 @@ openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 SYSTEM_PROMPT = """You are a forex trading analyst. Given a financial news article, analyze whether it presents a clear trading opportunity in the forex market.
 
-Each trade uses a 1:2 risk/reward structure — a 20-pip stop loss and a 40-pip take profit. The trade risks 0.5% of the account to potentially gain 1.0%. Only recommend a trade if the news signal gives the price a realistic chance of moving 40 pips in the expected direction before hitting the 20-pip stop. A weak or ambiguous signal is not worth the risk — the take profit is twice as far as the stop loss, so the directional conviction must be high.
+The trade risks 0.5% of the account — position size is calculated automatically to match whatever stop loss you choose. Choose stop_loss_pips and take_profit_pips based on the strength, clarity, and expected volatility of the news signal.
 
 Respond with ONLY a valid JSON object (no markdown, no explanation) in this exact format:
 {
@@ -16,15 +16,18 @@ Respond with ONLY a valid JSON object (no markdown, no explanation) in this exac
   "instrument": "EUR_USD",
   "direction": "buy" or "sell",
   "reasoning": "brief explanation of your decision",
-  "confidence": 0.85
+  "confidence": 0.85,
+  "stop_loss_pips": 20,
+  "take_profit_pips": 40
 }
 
 Rules:
-- instrument must be a valid OANDA forex pair like EUR_USD, GBP_USD, USD_JPY, AUD_USD, USD_CAD, etc.
+- instrument must be a valid OANDA forex pair (EUR_USD, GBP_USD, USD_JPY, AUD_USD, USD_CAD, etc.)
 - confidence must be a float between 0.0 and 1.0
-- If no clear trade exists, set is_good_trade to false; other fields can still be filled with best guesses
+- stop_loss_pips: 10–80. Use tighter stops (10–20) for precise high-confidence signals, wider (25–80) for volatile or uncertain moves
+- take_profit_pips: minimum 1.5× stop_loss_pips. Use higher multiples (2×–4×) for strong, clear signals
 - Only recommend a trade if confidence is above 0.65
-- Ask yourself: is this signal strong enough that price is more likely to reach +40 pips than -20 pips?"""
+- If is_good_trade is false, still return 20 / 40 as defaults for the pip fields"""
 
 
 EARLY_EXIT_SYSTEM_PROMPT = """You are a forex trading risk manager. An open trade exists, and new analysis with high confidence suggests the market will move in the OPPOSITE direction. Evaluate whether the existing trade should be closed early to limit losses or lock in profits, and whether a new trade in the opposite direction should be opened.
@@ -81,12 +84,11 @@ def analyze_early_exit(current_trade: dict, new_analysis: dict, new_article: dic
 def analyze_article(article: dict, risk_amount: float) -> dict:
     title = article.get("title", "")
     summary = article.get("summary", "")
-    reward_amount = round(risk_amount * 2, 2)
     user_message = (
         f"Title: {title}\n\n"
         f"Summary: {summary}\n\n"
-        f"Risk/reward context: This trade risks ${risk_amount:.2f} (20-pip stop loss) to potentially gain ${reward_amount:.2f} (40-pip take profit). "
-        f"Is the news signal strong enough that price is more likely to hit +40 pips than -20 pips?"
+        f"Risk context: This trade risks ${risk_amount:.2f} (0.5% of account). "
+        f"Choose stop_loss_pips and take_profit_pips that suit the signal strength and expected volatility."
     )
 
     print(f"Sending article to OpenAI for analysis: {title}")
@@ -111,5 +113,12 @@ def analyze_article(article: dict, risk_amount: float) -> dict:
 
     if analysis.get("confidence", 0) < 0.65:
         analysis["is_good_trade"] = False
+
+    sl = int(max(10, min(80, analysis.get("stop_loss_pips", 20))))
+    tp = int(max(15, min(200, analysis.get("take_profit_pips", 40))))
+    if tp < sl * 1.5:
+        tp = int(sl * 2)
+    analysis["stop_loss_pips"] = sl
+    analysis["take_profit_pips"] = tp
 
     return analysis

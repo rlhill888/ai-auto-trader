@@ -1,7 +1,7 @@
 import logging
 import requests
 
-from config import OANDA_API_KEY, OANDA_ACCOUNT_ID, OANDA_BASE_URL, STOP_LOSS_PIPS, RISK_PER_TRADE, RISK_REWARD_RATIO
+from config import OANDA_API_KEY, OANDA_ACCOUNT_ID, OANDA_BASE_URL, RISK_PER_TRADE
 
 logger = logging.getLogger(__name__)
 
@@ -39,29 +39,27 @@ def get_current_price(instrument: str, direction: str) -> float:
     return price
 
 
-def calculate_stop_price(entry_price: float, direction: str, pip_size: float) -> str:
-    stop_distance = STOP_LOSS_PIPS * pip_size
+def calculate_stop_price(entry_price: float, direction: str, pip_size: float, stop_loss_pips: int) -> str:
+    stop_distance = stop_loss_pips * pip_size
     stop = entry_price - stop_distance if direction == "buy" else entry_price + stop_distance
     decimal_places = 3 if pip_size == 0.01 else 5
     return f"{stop:.{decimal_places}f}"
 
 
-def calculate_take_profit_price(entry_price: float, direction: str, pip_size: float) -> str:
-    take_profit_distance = STOP_LOSS_PIPS * RISK_REWARD_RATIO * pip_size
+def calculate_take_profit_price(entry_price: float, direction: str, pip_size: float, take_profit_pips: int) -> str:
+    take_profit_distance = take_profit_pips * pip_size
     tp = entry_price + take_profit_distance if direction == "buy" else entry_price - take_profit_distance
     decimal_places = 3 if pip_size == 0.01 else 5
     return f"{tp:.{decimal_places}f}"
 
 
-def calculate_units(nav: float, pip_size: float) -> int:
-    """Risk exactly 0.5% of NAV per trade based on stop loss distance."""
+def calculate_units(nav: float, pip_size: float, stop_loss_pips: int) -> int:
     risk_amount = nav * RISK_PER_TRADE
-    pip_value_per_unit = pip_size
-    raw = int(risk_amount / (STOP_LOSS_PIPS * pip_value_per_unit))
+    raw = int(risk_amount / (stop_loss_pips * pip_size))
     result = min(max(raw, 1000), 100_000)
     logger.info(
         "Calculated trade units | nav=%.2f | risk_amount=%.2f | stop_loss_pips=%d | raw=%d | clamped=%d",
-        nav, risk_amount, STOP_LOSS_PIPS, raw, result,
+        nav, risk_amount, stop_loss_pips, raw, result,
     )
     return result
 
