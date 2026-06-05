@@ -25,6 +25,7 @@ export default function ClosedTrades({ initialTrades }: { initialTrades: Trade[]
   }, []);
 
   useAblyChannel("trading", "trade.closed", refetch);
+  useAblyChannel("trading", "trade.exited_early", refetch);
 
   return (
     <section className={styles.container}>
