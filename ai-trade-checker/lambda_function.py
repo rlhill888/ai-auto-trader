@@ -35,11 +35,19 @@ def lambda_handler(event, context):
                 profit_loss = float(oanda_trade.get("realizedPL", 0))
                 closed_at = oanda_trade.get("closeTime")
 
+                # Detect manual close: SL and TP orders both not filled
+                sl_filled = oanda_trade.get("stopLossOrder", {}).get("state") == "FILLED"
+                tp_filled = oanda_trade.get("takeProfitOrder", {}).get("state") == "FILLED"
+                already_flagged = trade.get("left_trade_early") or False
+                manual_exit = not sl_filled and not tp_filled and not already_flagged
+
                 update_trade_closed(
                     trade_id=trade_id,
                     exit_price=exit_price,
                     profit_loss=profit_loss,
                     closed_at=closed_at,
+                    left_trade_early=manual_exit,
+                    reason_for_leaving_trade_early="User manually left trade" if manual_exit else None,
                 )
                 publish_ably_event("trade.closed", {
                     "trade_id": str(trade_id),

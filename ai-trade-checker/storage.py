@@ -39,7 +39,7 @@ def get_open_trades() -> list[dict]:
     global _conn
     sql = """
         SELECT trade_id, oanda_trade_id, instrument, direction,
-               reasoning, confidence, article_title, article_summary
+               reasoning, confidence, article_title, article_summary, left_trade_early
         FROM trade_decisions
         WHERE trade_status = 'open'
         AND oanda_trade_id IS NOT NULL
@@ -65,16 +65,25 @@ def get_open_trades() -> list[dict]:
     return []
 
 
-def update_trade_closed(trade_id: str, exit_price: float, profit_loss: float, closed_at: str) -> None:
+def update_trade_closed(
+    trade_id: str,
+    exit_price: float,
+    profit_loss: float,
+    closed_at: str,
+    left_trade_early: bool = False,
+    reason_for_leaving_trade_early: str = None,
+) -> None:
     global _conn
     is_successful = profit_loss > 0
     sql = """
         UPDATE trade_decisions
-        SET trade_status  = 'closed',
-            exit_price    = %s,
-            profit_loss   = %s,
-            closed_at     = %s,
-            is_successful = %s
+        SET trade_status                  = 'closed',
+            exit_price                    = %s,
+            profit_loss                   = %s,
+            closed_at                     = %s,
+            is_successful                 = %s,
+            left_trade_early              = %s,
+            reason_for_leaving_trade_early = %s
         WHERE trade_id = %s
     """
     for attempt in range(2):
@@ -82,11 +91,11 @@ def update_trade_closed(trade_id: str, exit_price: float, profit_loss: float, cl
             conn = get_connection()
             cursor = conn.cursor()
             try:
-                cursor.execute(sql, (exit_price, profit_loss, closed_at, is_successful, trade_id))
+                cursor.execute(sql, (exit_price, profit_loss, closed_at, is_successful, left_trade_early, reason_for_leaving_trade_early, trade_id))
                 conn.commit()
                 logger.info(
-                    "Trade closed in DB | trade_id=%s | exit_price=%.5f | profit_loss=%.2f | is_successful=%s | closed_at=%s",
-                    trade_id, exit_price, profit_loss, is_successful, closed_at,
+                    "Trade closed in DB | trade_id=%s | exit_price=%.5f | profit_loss=%.2f | is_successful=%s | left_early=%s",
+                    trade_id, exit_price, profit_loss, is_successful, left_trade_early,
                 )
             finally:
                 cursor.close()

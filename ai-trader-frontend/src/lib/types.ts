@@ -24,4 +24,6 @@ export type Trade = {
   profit_loss?: number;
   exit_price?: number;
   lesson_learned?: string;
+  left_trade_early?: boolean;
+  reason_for_leaving_trade_early?: string;
 };
