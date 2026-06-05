@@ -69,6 +69,9 @@ export default function TradeCard({ trade, live = false, liveLoading = false, li
             Live
           </span>
         )}
+        {trade.left_trade_early && (
+          <span className={styles.earlyExitBadge}>⎋ Early</span>
+        )}
         {trade.trade_status === "closed" && trade.profit_loss != null && (
           <span className={trade.profit_loss >= 0 ? styles.plPositive : styles.plNegative}>
             {trade.profit_loss >= 0 ? "+$" : "-$"}{Math.abs(trade.profit_loss).toFixed(2)}

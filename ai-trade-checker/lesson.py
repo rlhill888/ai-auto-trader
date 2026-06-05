@@ -4,10 +4,10 @@ from config import OPENAI_API_KEY
 
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
-SYSTEM_PROMPT = """You are a forex trading coach reviewing completed trades. Given the details of a closed trade, write a concise lesson learned (2-4 sentences) that explains what worked, what didn't, and what should be done differently next time. Focus on actionable insights based on the trade outcome relative to the original reasoning and confidence level."""
+SYSTEM_PROMPT = """You are a forex trading coach reviewing completed trades. Given the details of a closed trade, write a concise lesson learned (2-4 sentences) that explains what worked, what didn't, and what should be done differently next time. Focus on actionable insights based on the trade outcome relative to the original reasoning and confidence level. If the trade was exited early, acknowledge that directly and factor the reason into the lesson."""
 
 
-def generate_lesson_learned(trade: dict, exit_price: float, profit_loss: float) -> str:
+def generate_lesson_learned(trade: dict, exit_price: float, profit_loss: float, left_trade_early: bool = False, early_exit_reason: str = None) -> str:
     outcome = "profitable" if profit_loss > 0 else "a loss"
     user_message = (
         f"Instrument: {trade.get('instrument')}\n"
@@ -18,7 +18,9 @@ def generate_lesson_learned(trade: dict, exit_price: float, profit_loss: float) 
         f"Original reasoning: {trade.get('reasoning')}\n"
         f"Exit price: {exit_price}\n"
         f"Profit/loss (account currency): {profit_loss}\n"
-        f"Outcome: {outcome}"
+        f"Outcome: {outcome}\n"
+        f"Exited early: {'yes' if left_trade_early else 'no'}\n"
+        + (f"Reason for early exit: {early_exit_reason}\n" if left_trade_early and early_exit_reason else "")
     )
 
     response = openai_client.chat.completions.create(

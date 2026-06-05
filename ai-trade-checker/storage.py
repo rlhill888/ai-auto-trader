@@ -39,7 +39,8 @@ def get_open_trades() -> list[dict]:
     global _conn
     sql = """
         SELECT trade_id, oanda_trade_id, instrument, direction,
-               reasoning, confidence, article_title, article_summary, left_trade_early
+               reasoning, confidence, article_title, article_summary,
+               left_trade_early, reason_for_leaving_trade_early
         FROM trade_decisions
         WHERE trade_status = 'open'
         AND oanda_trade_id IS NOT NULL

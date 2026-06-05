@@ -96,12 +96,20 @@ export default async function TradePage({
           </div>
         </div>
 
-        {trade.left_trade_early && trade.reason_for_leaving_trade_early && (
-          <div className={`${styles.lesson} ${styles.lessonBad}`}>
-            <p className={styles.sectionLabel}>Exited Early</p>
-            <p className={styles.lessonBody}>{trade.reason_for_leaving_trade_early}</p>
-          </div>
-        )}
+        {trade.left_trade_early && trade.reason_for_leaving_trade_early && (() => {
+          const [reasonText, articleUrl] = trade.reason_for_leaving_trade_early!.split("\n\n");
+          return (
+            <div className={`${styles.lesson} ${styles.lessonAmber}`}>
+              <p className={styles.sectionLabel}>Trade Exited Early Reason</p>
+              <p className={styles.lessonBody}>{reasonText}</p>
+              {articleUrl && (
+                <a href={articleUrl} target="_blank" rel="noopener noreferrer" className={styles.articleLink}>
+                  Article Link ↗
+                </a>
+              )}
+            </div>
+          );
+        })()}
 
         {trade.trade_status !== "open" && trade.lesson_learned && (
           <div className={`${styles.lesson} ${trade.is_successful == null ? styles.lessonNeutral : trade.is_successful ? styles.lessonGood : styles.lessonBad}`}>

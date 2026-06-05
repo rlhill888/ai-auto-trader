@@ -269,3 +269,17 @@
   font-weight: 600;
   letter-spacing: 0.3px;
 }
+
+.earlyExitBadge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #b25000;
+  background: rgba(255, 149, 0, 0.12);
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}

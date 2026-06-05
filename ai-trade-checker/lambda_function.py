@@ -64,7 +64,9 @@ def lambda_handler(event, context):
                 publish_ably_event("stats.updated", {})
 
                 try:
-                    lesson = generate_lesson_learned(trade, exit_price, profit_loss)
+                    actual_left_early = trade.get("left_trade_early") or manual_exit
+                    actual_reason = trade.get("reason_for_leaving_trade_early") or ("User manually left trade" if manual_exit else None)
+                    lesson = generate_lesson_learned(trade, exit_price, profit_loss, left_trade_early=actual_left_early, early_exit_reason=actual_reason)
                     update_trade_lesson_learned(trade_id=trade_id, lesson_learned=lesson)
                 except Exception:
                     logger.exception("Failed to generate lesson learned | trade_id=%s", trade_id)

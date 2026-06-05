@@ -3,6 +3,7 @@ import logging
 
 from ably_publisher import publish_ably_event
 from analysis import analyze_article, analyze_early_exit
+from dynamodb import update_daily_money_made
 from oanda import calculate_stop_price, calculate_take_profit_price, calculate_units, close_trade, execute_trade, get_account_nav, get_current_price, get_pip_size, has_open_position
 from storage import store_trade_decision, article_already_traded, get_open_trade_for_instrument, mark_trade_exited_early
 
@@ -82,15 +83,17 @@ def lambda_handler(event, context):
                     close_result = close_trade(current_trade_db["oanda_trade_id"])
                     mark_trade_exited_early(
                         current_trade_db["trade_id"],
-                        exit_decision["reason"],
+                        exit_decision["reason"] + "\n\n" + article.get("id", ""),
                         close_result["exit_price"],
                         close_result["profit_loss"],
                     )
+                    update_daily_money_made(close_result["profit_loss"])
                     publish_ably_event("trade.exited_early", {
                         "instrument": instrument,
                         "reason": exit_decision["reason"],
                         "profit_loss": close_result["profit_loss"],
                     })
+                    publish_ably_event("stats.updated", {})
                     logger.info(
                         "Record %d: TRADE EXITED EARLY | instrument=%s | exit_price=%.5f | pl=%.2f | reason=%s",
                         index, instrument, close_result["exit_price"], close_result["profit_loss"], exit_decision["reason"],
