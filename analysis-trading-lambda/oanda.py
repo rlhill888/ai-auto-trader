@@ -5,13 +5,15 @@ from config import OANDA_API_KEY, OANDA_ACCOUNT_ID, OANDA_BASE_URL, RISK_PER_TRA
 
 logger = logging.getLogger(__name__)
 
+REQUEST_TIMEOUT = 30
+
 
 def get_account_nav() -> float:
     url = f"{OANDA_BASE_URL}/v3/accounts/{OANDA_ACCOUNT_ID}/summary"
     headers = {"Authorization": f"Bearer {OANDA_API_KEY}"}
     logger.info("Fetching account NAV from OANDA | url=%s | account_id=%s", url, OANDA_ACCOUNT_ID)
 
-    response = requests.get(url, headers=headers, timeout=10)
+    response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
     logger.debug("GET %s -> HTTP %s", url, response.status_code)
     response.raise_for_status()
 
@@ -30,7 +32,7 @@ def get_pip_size(instrument: str) -> float:
 def get_current_price(instrument: str, direction: str) -> float:
     url = f"{OANDA_BASE_URL}/v3/accounts/{OANDA_ACCOUNT_ID}/pricing?instruments={instrument}"
     headers = {"Authorization": f"Bearer {OANDA_API_KEY}"}
-    response = requests.get(url, headers=headers, timeout=10)
+    response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
     response.raise_for_status()
     prices = response.json()["prices"][0]
     # use ask for buys (we pay the ask), bid for sells
@@ -67,7 +69,7 @@ def calculate_units(nav: float, pip_size: float, stop_loss_pips: int) -> int:
 def has_open_position(instrument: str) -> bool:
     url = f"{OANDA_BASE_URL}/v3/accounts/{OANDA_ACCOUNT_ID}/openPositions"
     headers = {"Authorization": f"Bearer {OANDA_API_KEY}"}
-    response = requests.get(url, headers=headers, timeout=10)
+    response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
     response.raise_for_status()
     positions = response.json().get("positions", [])
     return any(p["instrument"] == instrument for p in positions)
@@ -80,7 +82,7 @@ def close_trade(oanda_trade_id: str) -> dict:
         "Content-Type": "application/json",
     }
     logger.info("Closing trade early | trade_id=%s", oanda_trade_id)
-    response = requests.put(url, json={"units": "ALL"}, headers=headers, timeout=10)
+    response = requests.put(url, json={"units": "ALL"}, headers=headers, timeout=REQUEST_TIMEOUT)
     if not response.ok:
         logger.error("OANDA close trade error: %s", response.text)
     response.raise_for_status()
@@ -122,7 +124,7 @@ def execute_trade(instrument: str, direction: str, units: int, stop_loss_price: 
     )
     logger.debug("Order payload: %s", payload)
 
-    response = requests.post(url, json=payload, headers=headers, timeout=10)
+    response = requests.post(url, json=payload, headers=headers, timeout=REQUEST_TIMEOUT)
     logger.debug("POST %s -> HTTP %s", url, response.status_code)
     if not response.ok:
         logger.error("OANDA error response: %s", response.text)
