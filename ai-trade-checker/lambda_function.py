@@ -5,7 +5,7 @@ from ably_publisher import publish_ably_event
 from dynamodb import update_daily_money_made
 from lesson import generate_lesson_learned
 from oanda import get_trade_state
-from storage import get_open_trades, update_trade_closed, update_trade_lesson_learned
+from storage import get_open_trades, get_early_exited_trades_needing_lesson, update_trade_closed, update_trade_lesson_learned
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -88,8 +88,24 @@ def lambda_handler(event, context):
         except Exception:
             logger.exception("Error checking trade | trade_id=%s | oanda_trade_id=%s", trade_id, oanda_trade_id)
 
-    logger.info("ai-trade-checker complete | checked=%d | closed=%d", len(open_trades), closed_count)
+    early_exit_trades = get_early_exited_trades_needing_lesson()
+    lesson_count = 0
+
+    for trade in early_exit_trades:
+        trade_id = trade["trade_id"]
+        exit_price = float(trade.get("exit_price") or 0)
+        profit_loss = float(trade.get("profit_loss") or 0)
+        reason = trade.get("reason_for_leaving_trade_early")
+
+        try:
+            lesson = generate_lesson_learned(trade, exit_price, profit_loss, left_trade_early=True, early_exit_reason=reason)
+            update_trade_lesson_learned(trade_id=trade_id, lesson_learned=lesson)
+            lesson_count += 1
+        except Exception:
+            logger.exception("Failed to generate lesson learned for early exit | trade_id=%s", trade_id)
+
+    logger.info("ai-trade-checker complete | checked=%d | closed=%d | early_exit_lessons=%d", len(open_trades), closed_count, lesson_count)
     return {
         "statusCode": 200,
-        "body": json.dumps({"checked": len(open_trades), "closed": closed_count}),
+        "body": json.dumps({"checked": len(open_trades), "closed": closed_count, "early_exit_lessons": lesson_count}),
     }

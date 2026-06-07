@@ -66,6 +66,38 @@ def get_open_trades() -> list[dict]:
     return []
 
 
+def get_early_exited_trades_needing_lesson() -> list[dict]:
+    global _conn
+    sql = """
+        SELECT trade_id, oanda_trade_id, instrument, direction,
+               reasoning, confidence, article_title, article_summary,
+               left_trade_early, reason_for_leaving_trade_early,
+               exit_price, profit_loss
+        FROM trade_decisions
+        WHERE trade_status = 'closed'
+        AND left_trade_early = TRUE
+        AND lesson_learned IS NULL
+    """
+    for attempt in range(2):
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute(sql)
+                cols = [d[0] for d in cursor.description]
+                rows = [dict(zip(cols, row)) for row in cursor.fetchall()]
+                logger.info("Fetched %d early-exited trade(s) needing lesson", len(rows))
+                return rows
+            finally:
+                cursor.close()
+        except Exception as e:
+            logger.error("DB error fetching early-exited trades (attempt %d): %s", attempt + 1, e)
+            _conn = None
+            if attempt == 1:
+                raise
+    return []
+
+
 def update_trade_closed(
     trade_id: str,
     exit_price: float,
