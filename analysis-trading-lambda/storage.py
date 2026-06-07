@@ -129,9 +129,10 @@ def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_
         INSERT INTO trade_decisions (
             trade_id, article_id, article_title, article_summary,
             is_good_trade, instrument, direction, units,
-            reasoning, confidence, timestamp, oanda_order_id, oanda_trade_id, trade_status
+            reasoning, confidence, timestamp, oanda_order_id, oanda_trade_id, trade_status,
+            confidence_duration, estimated_trade_timeframe, recheck_duration, estimated_latest_trade_end
         ) VALUES (
-            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
         )
     """
 
@@ -157,6 +158,10 @@ def store_trade_decision(article: dict, analysis: dict, units: int, oanda_order_
         oanda_order_id or "",
         oanda_trade_id or "",
         trade_status,
+        analysis.get("confidence_duration"),
+        analysis.get("estimated_trade_timeframe"),
+        analysis.get("recheck_duration"),
+        analysis.get("estimated_latest_trade_end"),
     )
 
     for attempt in range(2):

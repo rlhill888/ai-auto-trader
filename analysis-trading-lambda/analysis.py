@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timezone
 
 from openai import OpenAI
 
@@ -18,7 +19,11 @@ Respond with ONLY a valid JSON object (no markdown, no explanation) in this exac
   "reasoning": "3-5 sentence explanation covering: what the news signal is, why it favors this direction and instrument, key risks to the trade, and why the chosen stop/take-profit levels suit this signal",
   "confidence": 0.85,
   "stop_loss_pips": 20,
-  "take_profit_pips": 40
+  "take_profit_pips": 40,
+  "confidence_duration": "8 hours",
+  "estimated_trade_timeframe": "4-8 hours",
+  "recheck_duration": "2 hours",
+  "estimated_latest_trade_end": "2026-06-07T18:00:00Z"
 }
 
 Rules:
@@ -27,7 +32,12 @@ Rules:
 - stop_loss_pips: 10–80. Use tighter stops (10–20) for precise high-confidence signals, wider (25–80) for volatile or uncertain moves
 - take_profit_pips: minimum 1.5× stop_loss_pips. Use higher multiples (2×–4×) for strong, clear signals
 - Only recommend a trade if confidence is above 0.65
-- If is_good_trade is false, still return 20 / 40 as defaults for the pip fields"""
+- If is_good_trade is false, still return 20 / 40 as defaults for the pip fields
+- confidence_duration: how long the confidence rating should be trusted based on the news type (e.g. "4 hours", "2 days")
+- estimated_trade_timeframe: how long the trade is expected to run before hitting TP/SL (e.g. "1-2 hours", "3 days")
+- recheck_duration: how often the system should recheck this live trade — must be in the format "N unit" where unit is one of: minutes, hours, days, weeks (e.g. "30 minutes", "2 hours", "1 day") — use shorter intervals for fast-moving news, longer for slow macro signals
+- All three duration fields are required even when is_good_trade is false; use sensible defaults like "24 hours" in that case
+- estimated_latest_trade_end: an ISO 8601 UTC timestamp (e.g. "2026-06-07T18:00:00Z") representing the absolute latest you expect this trade to still be running, calculated from the current time provided in the prompt; use the upper bound of your estimated_trade_timeframe"""
 
 
 EARLY_EXIT_SYSTEM_PROMPT = """You are a forex trading risk manager. An open trade exists, and new analysis with high confidence suggests the market will move in the OPPOSITE direction. Evaluate whether the existing trade should be closed early to limit losses or lock in profits, and whether a new trade in the opposite direction should be opened.
@@ -84,7 +94,9 @@ def analyze_early_exit(current_trade: dict, new_analysis: dict, new_article: dic
 def analyze_article(article: dict, risk_amount: float) -> dict:
     title = article.get("title", "")
     summary = article.get("summary", "")
+    current_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     user_message = (
+        f"Current UTC time: {current_time}\n\n"
         f"Title: {title}\n\n"
         f"Summary: {summary}\n\n"
         f"Risk context: This trade risks ${risk_amount:.2f} (0.5% of account). "

@@ -38,9 +38,7 @@ def get_connection():
 def get_open_trades() -> list[dict]:
     global _conn
     sql = """
-        SELECT trade_id, oanda_trade_id, instrument, direction,
-               reasoning, confidence, article_title, article_summary,
-               left_trade_early, reason_for_leaving_trade_early
+        SELECT *
         FROM trade_decisions
         WHERE trade_status = 'open'
         AND oanda_trade_id IS NOT NULL
@@ -135,6 +133,27 @@ def update_trade_closed(
             return
         except Exception as e:
             logger.error("DB error updating trade (attempt %d): %s", attempt + 1, e)
+            _conn = None
+            if attempt == 1:
+                raise
+
+
+def update_trade_last_checked(trade_id: str) -> None:
+    global _conn
+    sql = "UPDATE trade_decisions SET trade_last_checked = NOW() WHERE trade_id = %s"
+    for attempt in range(2):
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute(sql, (trade_id,))
+                conn.commit()
+                logger.info("trade_last_checked updated | trade_id=%s", trade_id)
+            finally:
+                cursor.close()
+            return
+        except Exception as e:
+            logger.error("DB error updating trade_last_checked (attempt %d): %s", attempt + 1, e)
             _conn = None
             if attempt == 1:
                 raise

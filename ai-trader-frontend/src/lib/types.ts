@@ -26,4 +26,9 @@ export type Trade = {
   lesson_learned?: string;
   left_trade_early?: boolean;
   reason_for_leaving_trade_early?: string;
+  confidence_duration?: string;
+  estimated_trade_timeframe?: string;
+  recheck_duration?: string;
+  estimated_latest_trade_end?: string;
+  trade_last_checked?: string;
 };
