@@ -1,15 +1,23 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import styles from "./OngoingTrades.module.css";
 import LiveTradesRow from "./LiveTradesRow";
 import { useAblyChannel } from "@/lib/useAblyChannel";
 import { Trade } from "@/lib/types";
+import { isForexMarketOpen } from "@/lib/forexMarketHours";
 
 export default function OngoingTrades({ initialTrades }: { initialTrades: Trade[] }) {
   const [trades, setTrades] = useState(initialTrades);
   const [flashIds, setFlashIds] = useState<Set<string>>(new Set());
+  const [marketOpen, setMarketOpen] = useState(() => isForexMarketOpen());
   const prevIdsRef = useRef<Set<string>>(new Set(initialTrades.map((t) => t.trade_id)));
+
+  useEffect(() => {
+    const id = setInterval(() => setMarketOpen(isForexMarketOpen()), 60000);
+    return () => clearInterval(id);
+  }, []);
 
   const refetch = useCallback(async () => {
     const res = await fetch("/api/trades?status=open");
@@ -30,7 +38,10 @@ export default function OngoingTrades({ initialTrades }: { initialTrades: Trade[
 
   return (
     <section className={styles.container}>
-      <p className={styles.title}>Ongoing Trades</p>
+      <div className={styles.titleRow}>
+        <p className={`${styles.title}${!marketOpen ? ` ${styles.titleClosed}` : ""}`}>Ongoing Trades</p>
+        {!marketOpen && <span className={styles.marketClosed}>Market Closed</span>}
+      </div>
       {trades.length === 0 ? (
         <p className={styles.empty}>No active trades.</p>
       ) : (
