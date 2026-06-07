@@ -71,6 +71,43 @@
   animation: flashBlue 1s ease-out forwards;
 }
 
+.closing {
+  position: relative;
+  pointer-events: none;
+}
+
+.closingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  z-index: 1;
+}
+
+@keyframes closingPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.closingText {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6e6e73;
+  letter-spacing: 0.2px;
+  animation: closingPulse 2s ease-in-out infinite;
+}
+
+.closedBadge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #aeaeb2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .card:hover {
   background: #ffffff;
   transform: translateY(-2px);

@@ -8,9 +8,10 @@ type Props = {
   liveLoading?: boolean;
   liveData?: LiveTradeData | null;
   isNew?: boolean;
+  isClosing?: boolean;
 };
 
-export default function TradeCard({ trade, live = false, liveLoading = false, liveData = null, isNew = false }: Props) {
+export default function TradeCard({ trade, live = false, liveLoading = false, liveData = null, isNew = false, isClosing = false }: Props) {
   const unrealizedPl = liveData?.unrealizedPl ?? null;
 
   const pipSize = trade.instrument.includes("JPY") ? 0.01 : 0.0001;
@@ -58,12 +59,13 @@ export default function TradeCard({ trade, live = false, liveLoading = false, li
   });
 
   return (
-    <Link href={`/trades/${trade.trade_id}`} className={`${styles.card}${isNew ? ` ${styles.flash}` : ""}`}>
+    <Link href={`/trades/${trade.trade_id}`} className={`${styles.card}${isNew ? ` ${styles.flash}` : ""}${isClosing ? ` ${styles.closing}` : ""}`}>
+      {isClosing && <div className={styles.closingOverlay}><span className={styles.closingText}>Closing Trade...</span></div>}
       <div className={styles.header}>
         <span className={`${styles.instrument} ${trade.trade_status === "closed" && trade.is_successful != null ? (trade.is_successful ? styles.instrumentSuccess : styles.instrumentFail) : ""}`}>
           {trade.instrument.replace("_", "/")}
         </span>
-        {live && (
+        {live && !isClosing && (
           <span className={styles.liveBadge}>
             <span className={styles.liveDot} />
             Live
@@ -91,7 +93,7 @@ export default function TradeCard({ trade, live = false, liveLoading = false, li
         {trade.direction}
       </span>
 
-      {live && liveLoading && (
+      {live && liveLoading && !isClosing && (
         <div className={styles.skeletonProgress}>
           <div className={styles.skeletonProgressHeader}>
             <span className={styles.skeletonChip} style={{ width: 72 }} />
@@ -104,7 +106,7 @@ export default function TradeCard({ trade, live = false, liveLoading = false, li
           </div>
         </div>
       )}
-      {live && !liveLoading && canShowBar && entryPct != null && markerPct != null && pips != null && pipsToSL != null && pipsToTP != null && (
+      {live && !liveLoading && !isClosing && canShowBar && entryPct != null && markerPct != null && pips != null && pipsToSL != null && pipsToTP != null && (
         <div className={styles.liveProgress}>
           <div className={styles.liveProgressHeader}>
             <span className={styles.rowLabel}>Entry {liveData.entryPrice.toFixed(trade.instrument.includes("JPY") ? 3 : 5)}</span>

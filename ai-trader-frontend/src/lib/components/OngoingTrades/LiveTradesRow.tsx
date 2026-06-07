@@ -15,7 +15,12 @@ export default function LiveTradesRow({ trades, flashIds }: { trades: Trade[]; f
     async function fetchLive() {
       try {
         const res = await fetch("/api/trades/live");
-        if (res.ok) setLiveData(await res.json());
+        if (res.ok){ 
+          setLiveData(await res.json())
+        }else{
+          setLoading(true)
+          return
+        }
       } catch {}
       setLoading(false);
     }
@@ -35,6 +40,7 @@ export default function LiveTradesRow({ trades, flashIds }: { trades: Trade[]; f
           liveLoading={loading}
           liveData={liveData[trade.oanda_trade_id] ?? null}
           isNew={flashIds.has(trade.trade_id)}
+          isClosing={!loading && liveData[trade.oanda_trade_id] === undefined}
         />
       ))}
     </div>

@@ -15,8 +15,6 @@ export default async function Home() {
 
   return (
     <main className={styles.main}>
-
-      {/* Left — fills height, sections split vertically */}
       <div className={styles.left}>
         <div className={styles.leftTop}>
           <AccountSummary />
@@ -28,8 +26,7 @@ export default async function Home() {
           <ClosedTrades initialTrades={closedTrades} />
         </div>
       </div>
-
-      {/* Right — sticky sidebar, fills height */}
+      
       <div className={styles.right}>
         <div className={styles.rightTop}>
           <ChartCarousel />
