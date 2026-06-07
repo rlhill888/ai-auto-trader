@@ -3,6 +3,7 @@ import logging
 import re
 from datetime import datetime, timezone, timedelta
 
+from forex_market_hours import is_forex_market_open
 from ably_publisher import publish_ably_event
 from dynamodb import update_daily_money_made
 from lesson import generate_lesson_learned
@@ -30,8 +31,13 @@ def parse_duration(s: str) -> timedelta:
             'day': timedelta(days=v), 'week': timedelta(weeks=v)}.get(unit, timedelta(hours=2))
 
 
+
 def lambda_handler(event, context):
     logger.info("ai-trade-checker starting")
+
+    if not is_forex_market_open():
+        logger.info("Forex market is closed — skipping run")
+        return {"statusCode": 200, "body": json.dumps({"message": "Market closed"})}
 
     open_trades = get_open_trades()
 

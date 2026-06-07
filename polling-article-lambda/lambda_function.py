@@ -5,6 +5,7 @@ import boto3
 import requests
 import feedparser
 from botocore.exceptions import ClientError
+from forex_market_hours import is_forex_market_open
 
 
 ARTICLE_TABLE_NAME = os.environ["ARTICLE_TABLE_NAME"]
@@ -14,9 +15,15 @@ sqs = boto3.client("sqs")
 table = dynamodb.Table(ARTICLE_TABLE_NAME)
 
 
+
 def lambda_handler(event, context):
     RSS_URL = "https://investinglive.com/feed/"
     print(f"Event: {json.dumps(event)}")
+
+    if not is_forex_market_open():
+        print("Forex market is closed — skipping article polling")
+        return {"statusCode": 200, "body": json.dumps({"message": "Market closed"})}
+
     try:
         print(f"Fetching RSS feed from {RSS_URL}")
         response = requests.get(RSS_URL, timeout=10)
