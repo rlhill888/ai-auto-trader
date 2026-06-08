@@ -40,7 +40,7 @@ export default function LiveTradesRow({ trades, flashIds }: { trades: Trade[]; f
           liveLoading={loading}
           liveData={liveData[trade.oanda_trade_id] ?? null}
           isNew={flashIds.has(trade.trade_id)}
-          isClosing={false}
+          isClosing={!loading && liveData[trade.oanda_trade_id] === undefined}
         />
       ))}
     </div>
