@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from datetime import timedelta
 
 from config import FRONTEND_BASE_URL
@@ -36,8 +37,12 @@ def lambda_handler(event, context):
 
         playbook = weekly_lesson.get("next_week_playbook")
         if playbook:
-            store_current_playbook(playbook)
-            logger.info("Playbook stored in DynamoDB")
+            marker = "## Next Week's Playbook"
+            rules_section = playbook[playbook.index(marker):] if marker in playbook else playbook
+            rule_lines = re.findall(r"^\d+\.\s+\*\*DO\b.*\*\*", rules_section, re.MULTILINE)
+            rules_only = "\n".join(rule_lines) if rule_lines else rules_section
+            store_current_playbook(rules_only)
+            logger.info("Playbook stored in DynamoDB (%d rules)", len(rule_lines))
 
         store_weekly_report(
             week_start=week_start,

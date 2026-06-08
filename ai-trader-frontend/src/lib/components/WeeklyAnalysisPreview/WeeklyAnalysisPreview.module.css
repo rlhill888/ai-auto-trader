@@ -1,0 +1,96 @@
+.container {
+  padding: 20px 20px 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  color: #000;
+}
+
+.placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  border: 1px dashed #d2d2d7;
+}
+
+.placeholderText {
+  font-size: 13px;
+  color: #aeaeb2;
+}
+
+.card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid #e8e8e8;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
+  text-decoration: none;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.card:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: #d0d0d5;
+}
+
+.dateRange {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0a0a0a;
+  letter-spacing: -0.2px;
+}
+
+.tradeCount {
+  font-size: 11px;
+  font-weight: 500;
+  color: #007aff;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.excerpt {
+  font-size: 13px;
+  line-height: 1.65;
+  color: #666;
+  flex: 1;
+}
+
+.cta {
+  font-size: 11px;
+  font-weight: 700;
+  color: #007aff;
+  letter-spacing: 0.3px;
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px 16px 12px;
+    height: auto;
+  }
+
+  .placeholder {
+    flex: none;
+    min-height: 100px;
+  }
+
+  .card {
+    flex: none;
+  }
+}

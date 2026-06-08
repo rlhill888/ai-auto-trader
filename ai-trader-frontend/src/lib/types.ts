@@ -1,3 +1,16 @@
+export type WeeklyReport = {
+  id: number;
+  week_start: string;
+  week_end: string;
+  trade_count: number;
+  synopsis: string;
+  weekly_lesson: string;
+  key_insights: string;
+  biggest_mistakes: string;
+  best_performing_themes: string;
+  new_playbook_rules: string;
+};
+
 export type LiveTradeData = {
   unrealizedPl: number;
   entryPrice: number;

@@ -1,4 +1,4 @@
-import { Trade } from "./types";
+import { Trade, WeeklyReport } from "./types";
 
 function baseUrl() {
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
@@ -37,5 +37,17 @@ export type DailyStats = {
 export async function getDailyStats(): Promise<DailyStats> {
   const res = await fetch(`${baseUrl()}/api/account/daily`, { cache: "no-store" });
   if (!res.ok) return { dailyMoneyMade: 0, tradesCompleted: 0, succeeded: 0, failed: 0 };
+  return res.json();
+}
+
+export async function getLatestWeeklyAnalysis(): Promise<WeeklyReport | null> {
+  const res = await fetch(`${baseUrl()}/api/analysis`, { cache: "no-store" });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+export async function getWeeklyAnalysis(id: string): Promise<WeeklyReport | null> {
+  const res = await fetch(`${baseUrl()}/api/analysis/${id}`, { cache: "no-store" });
+  if (!res.ok) return null;
   return res.json();
 }

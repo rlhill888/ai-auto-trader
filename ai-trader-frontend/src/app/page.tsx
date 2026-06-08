@@ -1,6 +1,6 @@
 import AccountSummary from "@/lib/components/AccountSummary/AccountSummary";
 import OngoingTrades from "@/lib/components/OngoingTrades/OngoingTrades";
-import ChartCarousel from "@/lib/components/ChartCarousel/ChartCarousel";
+import WeeklyAnalysisPreview from "@/lib/components/WeeklyAnalysisPreview/WeeklyAnalysisPreview";
 import ClosedTrades from "@/lib/components/ClosedTrades/ClosedTrades";
 import ArticleCarousel from "@/lib/components/ArticleCarousel/ArticleCarousel";
 import { getTrades } from "@/lib/api";
@@ -29,7 +29,7 @@ export default async function Home() {
       
       <div className={styles.right}>
         <div className={styles.rightTop}>
-          <ChartCarousel />
+          <WeeklyAnalysisPreview />
         </div>
         <div className={styles.rightBot}>
           <ArticleCarousel trades={allTrades} />
