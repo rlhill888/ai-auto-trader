@@ -71,12 +71,12 @@
   animation: flashBlue 1s ease-out forwards;
 }
 
-.closing {
+.updating {
   position: relative;
   pointer-events: none;
 }
 
-.closingOverlay {
+.updatingOverlay {
   position: absolute;
   inset: 0;
   display: flex;
@@ -87,17 +87,17 @@
   z-index: 1;
 }
 
-@keyframes closingPulse {
+@keyframes updatingPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.45; }
 }
 
-.closingText {
+.updatingText {
   font-size: 13px;
   font-weight: 500;
   color: #6e6e73;
   letter-spacing: 0.2px;
-  animation: closingPulse 2s ease-in-out infinite;
+  animation: updatingPulse 2s ease-in-out infinite;
 }
 
 .closedBadge {
