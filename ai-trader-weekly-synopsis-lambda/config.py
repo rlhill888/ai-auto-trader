@@ -17,3 +17,4 @@ def get_secret(secret_name: str) -> dict:
 secret = get_secret(os.environ["SECRET_NAME"])
 OPENAI_API_KEY = secret["OPENAI_API_KEY"]
 DATABASE_URL = secret["DATABASE_URL"]
+FRONTEND_BASE_URL = os.environ.get("FRONTEND_BASE_URL", "").rstrip("/")
