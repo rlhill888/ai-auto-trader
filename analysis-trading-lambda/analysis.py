@@ -99,6 +99,7 @@ def analyze_early_exit(current_trade: dict, new_analysis: dict, new_article: dic
 def analyze_article(article: dict, risk_amount: float) -> dict:
     title = article.get("title", "")
     summary = article.get("summary", "")
+    published = article.get("published", "")
     current_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     playbook = get_current_playbook()
     system_prompt = SYSTEM_PROMPT
@@ -106,6 +107,7 @@ def analyze_article(article: dict, risk_amount: float) -> dict:
         system_prompt += f"\n\n=== RULES FOR TRADE ===\n{playbook}"
     user_message = (
         f"Current UTC time: {current_time}\n\n"
+        f"Article published: {published}\n\n"
         f"Title: {title}\n\n"
         f"Summary: {summary}\n\n"
         f"Risk context: This trade risks ${risk_amount:.2f} (0.5% of account). "
