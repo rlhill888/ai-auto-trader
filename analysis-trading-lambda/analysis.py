@@ -55,6 +55,10 @@ Respond with ONLY a valid JSON object (no markdown, no explanation) in this exac
 def analyze_early_exit(current_trade: dict, new_analysis: dict, new_article: dict) -> dict:
     current_direction = current_trade.get("direction", "")
     new_direction = new_analysis.get("direction", "")
+    playbook = get_current_playbook()
+    system_prompt = EARLY_EXIT_SYSTEM_PROMPT
+    if playbook:
+        system_prompt += f"\n\n=== RULES FOR TRADE ===\n{playbook}"
     user_message = (
         f"=== CURRENT OPEN TRADE ===\n"
         f"Direction: {current_direction}\n"
@@ -75,7 +79,7 @@ def analyze_early_exit(current_trade: dict, new_analysis: dict, new_article: dic
     response = openai_client.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": EARLY_EXIT_SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
         ],
         temperature=0.2,

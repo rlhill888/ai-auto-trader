@@ -1,6 +1,7 @@
 from openai import OpenAI
 
 from config import OPENAI_API_KEY
+from dynamodb import get_current_playbook
 
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -8,6 +9,10 @@ SYSTEM_PROMPT = """You are a forex trading coach reviewing completed trades. Giv
 
 
 def generate_lesson_learned(trade: dict, exit_price: float, profit_loss: float, left_trade_early: bool = False, early_exit_reason: str = None) -> str:
+    playbook = get_current_playbook()
+    system_prompt = SYSTEM_PROMPT
+    if playbook:
+        system_prompt += f"\n\n=== RULES FOR TRADE ===\n{playbook}"
     outcome = "profitable" if profit_loss > 0 else "a loss"
     user_message = (
         f"Instrument: {trade.get('instrument')}\n"
@@ -26,7 +31,7 @@ def generate_lesson_learned(trade: dict, exit_price: float, profit_loss: float, 
     response = openai_client.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
         ],
         temperature=0.4,

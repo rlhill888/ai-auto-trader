@@ -3,6 +3,7 @@ import json
 from openai import OpenAI
 
 from config import OPENAI_API_KEY
+from dynamodb import get_current_playbook
 
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -18,6 +19,10 @@ Respond with ONLY a valid JSON object (no markdown, no explanation) in this exac
 
 
 def analyze_trade_recheck(trade: dict, oanda_trade: dict) -> dict:
+    playbook = get_current_playbook()
+    system_prompt = RECHECK_SYSTEM_PROMPT
+    if playbook:
+        system_prompt += f"\n\n=== RULES FOR TRADE ===\n{playbook}"
     unrealized_pl = oanda_trade.get("unrealizedPL", "N/A")
     current_units = oanda_trade.get("currentUnits", "N/A")
     open_time = oanda_trade.get("openTime", "N/A")
@@ -44,7 +49,7 @@ def analyze_trade_recheck(trade: dict, oanda_trade: dict) -> dict:
     response = openai_client.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": RECHECK_SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
         ],
         temperature=0.2,
