@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from openai import OpenAI
 
 from config import OPENAI_API_KEY
+from dynamodb import get_current_playbook
 
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -95,6 +96,10 @@ def analyze_article(article: dict, risk_amount: float) -> dict:
     title = article.get("title", "")
     summary = article.get("summary", "")
     current_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    playbook = get_current_playbook()
+    system_prompt = SYSTEM_PROMPT
+    if playbook:
+        system_prompt += f"\n\n=== RULES FOR TRADE ===\n{playbook}"
     user_message = (
         f"Current UTC time: {current_time}\n\n"
         f"Title: {title}\n\n"
@@ -107,7 +112,7 @@ def analyze_article(article: dict, risk_amount: float) -> dict:
     response = openai_client.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
         ],
         temperature=0.2,

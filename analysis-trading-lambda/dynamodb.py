@@ -18,6 +18,15 @@ def get_table():
     return _table
 
 
+def get_current_playbook() -> str | None:
+    try:
+        response = get_table().get_item(Key={"globalKey": "GLOBAL"})
+        return response.get("Item", {}).get("currentPlaybook")
+    except Exception:
+        logger.exception("Failed to fetch currentPlaybook from DynamoDB")
+        return None
+
+
 def update_daily_money_made(profit_loss: float) -> None:
     try:
         is_successful = profit_loss > 0

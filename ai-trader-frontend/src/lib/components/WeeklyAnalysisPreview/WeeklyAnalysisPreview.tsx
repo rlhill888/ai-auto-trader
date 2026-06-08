@@ -45,6 +45,9 @@ export default async function WeeklyAnalysisPreview() {
         <p className={styles.dateRange}>{dateRange}</p>
         <p className={styles.tradeCount}>{report.trade_count} trades analyzed</p>
         <p className={styles.excerpt}>{excerpt}</p>
+        <div className={styles.vizPlaceholder}>
+          <p className={styles.vizPlaceholderText}>Data Visualization Coming Soon</p>
+        </div>
         <p className={styles.cta}>Read full analysis →</p>
       </Link>
     </section>
