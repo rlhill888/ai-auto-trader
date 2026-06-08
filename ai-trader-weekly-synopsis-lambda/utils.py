@@ -4,7 +4,9 @@ from datetime import date, datetime, timedelta
 def resolve_week_start(event: dict) -> date:
     raw = (event or {}).get("date")
     if raw:
-        return datetime.strptime(raw, "%m/%d/%Y").date()
+        parsed = datetime.strptime(raw, "%m/%d/%Y").date()
+        days_since_sunday = (parsed.weekday() + 1) % 7
+        return parsed - timedelta(days=days_since_sunday)
     today = date.today()
     # weekday(): Mon=0 … Sat=5, Sun=6
     # Always resolve to the most recently *completed* Sunday–Saturday week.
