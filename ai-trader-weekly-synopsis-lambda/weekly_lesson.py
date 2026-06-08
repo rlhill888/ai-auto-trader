@@ -43,13 +43,15 @@ trades the theme powered and why the narrative created directional momentum, the
 signal, whether the theme still has legs into next week or appears to be fading, and a specific recommendation \
 on how to position around it going forward. If a theme produced mixed results, address both sides honestly.
 
-"next_week_playbook" — This is the most critical output of the entire review. It must always be structured \
-in exactly two parts using the precise markdown headers shown below. Do not deviate from these headers — \
+"next_week_playbook" — This is the most critical output of the entire review. It is structured in one or \
+two parts depending on whether a prior playbook exists. Do not deviate from the markdown headers below — \
 they are required for downstream processing.\
 \n\n\
-**PART 1 — Prior Playbook Audit:**\
-\nIf a current playbook was provided in the user message, this section is mandatory and must appear first. \
-Begin with the exact header: `## Prior Playbook Audit` (no variations). \
+**PART 1 — Prior Playbook Audit (conditional):**\
+\nInclude this section ONLY if a current playbook was provided in the user message. If no current playbook \
+was provided, skip Part 1 entirely and go straight to Part 2. Do NOT invent or reference a playbook that \
+was not provided. When a playbook IS provided, it must appear first with the exact header: \
+`## Prior Playbook Audit` (no variations). \
 Under this header, audit every single rule from the current playbook. For each rule, write a dedicated \
 subsection with a bold rule header and a thorough analysis covering: whether the rule was followed or \
 violated this week and in which specific trades; what the outcome was when it was followed versus when \
