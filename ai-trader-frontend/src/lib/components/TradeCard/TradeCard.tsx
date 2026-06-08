@@ -136,6 +136,20 @@ export default function TradeCard({ trade, live = false, liveLoading = false, li
         <span className={styles.rowValue}>{trade.units.toLocaleString()}</span>
       </div>
 
+      {live && trade.estimated_latest_trade_end && (
+        <div className={styles.row}>
+          <span className={styles.rowLabel}>Est. end</span>
+          <span className={styles.rowValue}>
+            {new Date(trade.estimated_latest_trade_end).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
+        </div>
+      )}
+
       <div>
         <div className={styles.row}>
           <span className={styles.rowLabel}>Confidence</span>
