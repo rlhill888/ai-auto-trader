@@ -3,6 +3,8 @@ import logging
 import re
 from datetime import datetime, timezone, timedelta
 
+import requests
+
 from forex_market_hours import is_forex_market_open
 from ably_publisher import publish_ably_event
 from dynamodb import update_daily_money_made
@@ -12,6 +14,7 @@ from recheck import analyze_trade_recheck
 from storage import (
     get_open_trades,
     get_early_exited_trades_needing_lesson,
+    update_trade_cancelled,
     update_trade_closed,
     update_trade_lesson_learned,
     update_trade_last_checked,
@@ -112,6 +115,17 @@ def lambda_handler(event, context):
                     trade_id, oanda_trade_id, state,
                 )
 
+        except requests.exceptions.HTTPError as e:
+            if e.response is not None and e.response.status_code == 404:
+                logger.warning(
+                    "Trade not found on OANDA (404) — marking cancelled | trade_id=%s | oanda_trade_id=%s",
+                    trade_id, oanda_trade_id,
+                )
+                update_trade_cancelled(trade_id=trade_id)
+                closed_trade_ids.add(trade_id)
+                closed_count += 1
+            else:
+                logger.exception("Error checking trade | trade_id=%s | oanda_trade_id=%s", trade_id, oanda_trade_id)
         except Exception:
             logger.exception("Error checking trade | trade_id=%s | oanda_trade_id=%s", trade_id, oanda_trade_id)
 
@@ -208,6 +222,15 @@ def lambda_handler(event, context):
                 logger.info("AI recheck: staying in trade | trade_id=%s", trade["trade_id"])
 
             recheck_count += 1
+        except requests.exceptions.HTTPError as e:
+            if e.response is not None and e.response.status_code == 404:
+                logger.warning(
+                    "Trade not found on OANDA during recheck (404) — marking cancelled | trade_id=%s",
+                    trade["trade_id"],
+                )
+                update_trade_cancelled(trade_id=trade["trade_id"])
+            else:
+                logger.exception("Error during AI recheck | trade_id=%s", trade["trade_id"])
         except Exception:
             logger.exception("Error during AI recheck | trade_id=%s", trade["trade_id"])
 

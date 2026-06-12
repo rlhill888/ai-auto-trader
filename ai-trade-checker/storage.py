@@ -138,6 +138,27 @@ def update_trade_closed(
                 raise
 
 
+def update_trade_cancelled(trade_id: str) -> None:
+    global _conn
+    sql = "UPDATE trade_decisions SET trade_status = 'cancelled' WHERE trade_id = %s"
+    for attempt in range(2):
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute(sql, (trade_id,))
+                conn.commit()
+                logger.info("Trade marked cancelled | trade_id=%s", trade_id)
+            finally:
+                cursor.close()
+            return
+        except Exception as e:
+            logger.error("DB error cancelling trade (attempt %d): %s", attempt + 1, e)
+            _conn = None
+            if attempt == 1:
+                raise
+
+
 def update_trade_last_checked(trade_id: str) -> None:
     global _conn
     sql = "UPDATE trade_decisions SET trade_last_checked = NOW() WHERE trade_id = %s"

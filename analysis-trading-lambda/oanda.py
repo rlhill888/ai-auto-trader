@@ -153,6 +153,7 @@ def execute_trade(instrument: str, direction: str, units: int, stop_loss_price: 
             "Order CANCELLED | transaction_id=%s | instrument=%s | direction=%s | units=%d | reason=%s",
             order_id, instrument, direction, units, cancel_reason,
         )
+        raise RuntimeError(f"OANDA order cancelled before fill: {cancel_reason}")
     else:
         logger.info(
             "Order CREATED (pending fill) | transaction_id=%s | trade_id=%s | instrument=%s | direction=%s | units=%d",
