@@ -1,13 +1,12 @@
 import json
 import logging
 import re
-from datetime import timedelta
 
 from config import FRONTEND_BASE_URL
 from dynamodb import get_current_playbook, store_current_playbook
 from storage import get_closed_trades_for_week, store_weekly_report
 from synopsis import generate_synopsis
-from utils import resolve_week_start
+from utils import resolve_date_range
 from weekly_lesson import generate_weekly_lesson
 
 logger = logging.getLogger()
@@ -18,8 +17,7 @@ def lambda_handler(event, context):
     logger.info("Weekly synopsis lambda invoked")
 
     try:
-        week_start = resolve_week_start(event)
-        week_end = week_start + timedelta(days=7)
+        week_start, week_end = resolve_date_range(event)
         logger.info("Querying trades for week %s to %s", week_start, week_end)
 
         trades = get_closed_trades_for_week(week_start, week_end)
