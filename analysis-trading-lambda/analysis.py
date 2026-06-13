@@ -58,7 +58,7 @@ def analyze_early_exit(current_trade: dict, new_analysis: dict, new_article: dic
     playbook = get_current_playbook()
     system_prompt = EARLY_EXIT_SYSTEM_PROMPT
     if playbook:
-        system_prompt += f"\n\n=== RULES FOR TRADE ===\n{playbook}"
+        system_prompt += f"\nMake sure the following rules are followed: \n\n=== RULES FOR TRADE ===\n{playbook}"
     user_message = (
         f"=== CURRENT OPEN TRADE ===\n"
         f"Direction: {current_direction}\n"
@@ -77,13 +77,11 @@ def analyze_early_exit(current_trade: dict, new_analysis: dict, new_article: dic
 
     print(f"Sending early exit analysis to OpenAI | current={current_direction} new={new_direction}")
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-5.5-2026-04-23",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
-        ],
-        temperature=0.2,
-        max_tokens=2000,
+        ]
     )
 
     raw = response.choices[0].message.content.strip()
@@ -104,7 +102,7 @@ def analyze_article(article: dict, risk_amount: float) -> dict:
     playbook = get_current_playbook()
     system_prompt = SYSTEM_PROMPT
     if playbook:
-        system_prompt += f"\n\n=== RULES FOR TRADE ===\n{playbook}"
+        system_prompt += f"\nMake sure the following rules are followed: \n\n=== RULES FOR TRADE ===\n{playbook}"
     user_message = (
         f"Current UTC time: {current_time}\n\n"
         f"Article published: {published}\n\n"
@@ -116,13 +114,11 @@ def analyze_article(article: dict, risk_amount: float) -> dict:
 
     print(f"Sending article to OpenAI for analysis: {title}")
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-5.5-2026-04-23",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
-        ],
-        temperature=0.2,
-        max_tokens=2000,
+        ]
     )
 
     raw = response.choices[0].message.content.strip()

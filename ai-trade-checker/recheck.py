@@ -22,7 +22,7 @@ def analyze_trade_recheck(trade: dict, oanda_trade: dict) -> dict:
     playbook = get_current_playbook()
     system_prompt = RECHECK_SYSTEM_PROMPT
     if playbook:
-        system_prompt += f"\n\n=== RULES FOR TRADE ===\n{playbook}"
+        system_prompt += f"\n\nMake sure the following rules are followed: \n\n=== RULES FOR TRADE ===\n{playbook}"
     unrealized_pl = oanda_trade.get("unrealizedPL", "N/A")
     current_units = oanda_trade.get("currentUnits", "N/A")
     open_time = oanda_trade.get("openTime", "N/A")
@@ -47,13 +47,11 @@ def analyze_trade_recheck(trade: dict, oanda_trade: dict) -> dict:
     )
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-5.5-2026-04-23",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
-        ],
-        temperature=0.2,
-        max_tokens=2000,
+        ]
     )
 
     raw = response.choices[0].message.content.strip()
