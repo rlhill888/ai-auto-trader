@@ -136,7 +136,7 @@ def generate_weekly_lesson(trades: list[dict], week_start, week_end, synopsis: s
     )
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-5.5-2026-04-23",
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_message},

@@ -138,7 +138,7 @@ def generate_synopsis(trades: list[dict], week_start, week_end, base_url: str = 
     )
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-5.5-2026-04-23",
         messages=[
             {"role": "system", "content": _build_system_prompt(base_url, current_playbook)},
             {"role": "user", "content": user_message},
