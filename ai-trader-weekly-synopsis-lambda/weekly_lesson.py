@@ -142,7 +142,6 @@ def generate_weekly_lesson(trades: list[dict], week_start, week_end, synopsis: s
             {"role": "user", "content": user_message},
         ],
         response_format={"type": "json_object"},
-        temperature=0.5,
     )
 
     return json.loads(response.choices[0].message.content)

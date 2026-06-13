@@ -142,8 +142,7 @@ def generate_synopsis(trades: list[dict], week_start, week_end, base_url: str = 
         messages=[
             {"role": "system", "content": _build_system_prompt(base_url, current_playbook)},
             {"role": "user", "content": user_message},
-        ],
-        temperature=0.7
+        ]
     )
 
     return response.choices[0].message.content.strip()
