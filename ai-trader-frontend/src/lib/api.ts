@@ -5,10 +5,17 @@ function baseUrl() {
   return "http://localhost:3000";
 }
 
-export async function getTrades(status?: Trade["trade_status"]): Promise<Trade[]> {
-  const url = status
-    ? `${baseUrl()}/api/trades?status=${status}`
-    : `${baseUrl()}/api/trades`;
+export async function getTrades(
+  status?: Trade["trade_status"],
+  limit?: number,
+  offset?: number
+): Promise<Trade[]> {
+  const params = new URLSearchParams();
+  if (status) params.set("status", status);
+  if (limit !== undefined) params.set("limit", String(limit));
+  if (offset !== undefined) params.set("offset", String(offset));
+  const qs = params.toString();
+  const url = `${baseUrl()}/api/trades${qs ? `?${qs}` : ""}`;
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return [];
   return res.json();

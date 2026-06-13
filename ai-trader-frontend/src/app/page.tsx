@@ -8,9 +8,9 @@ import styles from "./page.module.css";
 
 export default async function Home() {
   const [allTrades, openTrades, closedTrades] = await Promise.all([
-    getTrades(),
+    getTrades(undefined, 15),
     getTrades("open"),
-    getTrades("closed"),
+    getTrades("closed", 20),
   ]);
 
   return (

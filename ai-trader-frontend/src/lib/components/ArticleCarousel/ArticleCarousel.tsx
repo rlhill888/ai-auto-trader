@@ -22,7 +22,7 @@ export default function ArticleCarousel({ trades: initialTrades }: { trades: Tra
   const [index, setIndex] = useState(0);
 
   const refetch = useCallback(async () => {
-    const res = await fetch("/api/trades");
+    const res = await fetch("/api/trades?limit=15");
     if (res.ok) {
       const next = await res.json();
       setTrades(next);
