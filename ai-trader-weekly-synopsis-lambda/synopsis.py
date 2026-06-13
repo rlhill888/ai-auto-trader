@@ -1,3 +1,5 @@
+from asyncio.log import logger
+
 from openai import OpenAI
 
 from config import OPENAI_API_KEY
@@ -137,6 +139,7 @@ def generate_synopsis(trades: list[dict], week_start, week_end, base_url: str = 
         f"Trade data:\n\n{trades_text}"
     )
 
+    logger.info(f"Sending synopsis analysis message to OpenAI: {user_message}")
     response = openai_client.chat.completions.create(
         model="gpt-5.5-2026-04-23",
         messages=[
@@ -144,5 +147,6 @@ def generate_synopsis(trades: list[dict], week_start, week_end, base_url: str = 
             {"role": "user", "content": user_message},
         ]
     )
+    logger.info(f"Received response from OpenAI: {response.choices[0].message.content}")
 
     return response.choices[0].message.content.strip()

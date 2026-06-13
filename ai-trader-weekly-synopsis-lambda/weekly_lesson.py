@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import json
 
 from openai import OpenAI
@@ -134,7 +135,7 @@ def generate_weekly_lesson(trades: list[dict], week_start, week_end, synopsis: s
         f"{synopsis_section}"
         f"Trade data:\n\n{trades_text}"
     )
-
+    logger.info(f"Sending analysis payload to OpenAI for analysis: ", user_message)
     response = openai_client.chat.completions.create(
         model="gpt-5.5-2026-04-23",
         messages=[
@@ -143,5 +144,6 @@ def generate_weekly_lesson(trades: list[dict], week_start, week_end, synopsis: s
         ],
         response_format={"type": "json_object"},
     )
+    logger.info(f"Received response from OpenAI: {response.choices[0].message.content}")
 
     return json.loads(response.choices[0].message.content)
