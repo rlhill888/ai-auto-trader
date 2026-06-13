@@ -135,7 +135,7 @@ def generate_weekly_lesson(trades: list[dict], week_start, week_end, synopsis: s
         f"{synopsis_section}"
         f"Trade data:\n\n{trades_text}"
     )
-    logger.info(f"Sending analysis payload to OpenAI for analysis: ", user_message)
+    logger.info("Sending analysis payload to OpenAI for analysis: %s", user_message)
     response = openai_client.chat.completions.create(
         model="gpt-5.5-2026-04-23",
         messages=[
