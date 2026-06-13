@@ -83,7 +83,7 @@ def analyze_early_exit(current_trade: dict, new_analysis: dict, new_article: dic
             {"role": "user", "content": user_message},
         ],
         temperature=0.2,
-        max_tokens=500,
+        max_tokens=2000,
     )
 
     raw = response.choices[0].message.content.strip()
@@ -122,7 +122,7 @@ def analyze_article(article: dict, risk_amount: float) -> dict:
             {"role": "user", "content": user_message},
         ],
         temperature=0.2,
-        max_tokens=500,
+        max_tokens=2000,
     )
 
     raw = response.choices[0].message.content.strip()

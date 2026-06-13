@@ -35,7 +35,7 @@ def generate_lesson_learned(trade: dict, exit_price: float, profit_loss: float, 
             {"role": "user", "content": user_message},
         ],
         temperature=0.4,
-        max_tokens=500,
+        max_tokens=2000,
     )
 
     return response.choices[0].message.content.strip()

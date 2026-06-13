@@ -53,7 +53,7 @@ def analyze_trade_recheck(trade: dict, oanda_trade: dict) -> dict:
             {"role": "user", "content": user_message},
         ],
         temperature=0.2,
-        max_tokens=500,
+        max_tokens=2000,
     )
 
     raw = response.choices[0].message.content.strip()
