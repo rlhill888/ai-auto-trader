@@ -8,6 +8,7 @@ export default async function AccountSummary() {
 
   const isPositive = daily.dailyMoneyMade >= 0;
 
+  
   return (
     <section className={styles.container}>
       <div>
