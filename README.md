@@ -1,5 +1,7 @@
 # ai-auto-trader
 
+**Deployed App:** https://main.d2jf8zrd3yfra.amplifyapp.com/
+
 An autonomous forex trading system that reads financial news, decides whether a headline represents a tradeable opportunity, and executes, monitors, and exits trades on OANDA without manual intervention.
 
 The system watches a financial news feed in real time, has a language model judge each article for trading signal, sizes and places the trade automatically, then keeps watching the position — closing it early if a contradicting signal shows up, periodically re-evaluating it against the live market, and writing a "lesson learned" once it closes. Every week it reviews its own closed trades and updates its own playbook of rules for future decisions.
