@@ -58,3 +58,11 @@ export async function getWeeklyAnalysis(id: string): Promise<WeeklyReport | null
   if (!res.ok) return null;
   return res.json();
 }
+
+export async function getWeeklyCharts(weekStart: string, weekEnd: string): Promise<string[]> {
+  const params = new URLSearchParams({ week_start: weekStart, week_end: weekEnd });
+  const res = await fetch(`${baseUrl()}/api/charts?${params}`, { cache: "no-store" });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.charts ?? [];
+}

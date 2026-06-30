@@ -1,3 +1,5 @@
 openai
 requests
 pg8000
+pandas
+matplotlib

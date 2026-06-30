@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import { getWeeklyAnalysis } from "@/lib/api";
+import { getWeeklyAnalysis, getWeeklyCharts } from "@/lib/api";
 import styles from "./page.module.css";
 
 function formatDateRange(weekStart: string, weekEnd: string): string {
@@ -20,6 +20,8 @@ export default async function WeeklyAnalysisPage({
   const report = await getWeeklyAnalysis(id);
 
   if (!report) notFound();
+
+  const charts = await getWeeklyCharts(report.week_start, report.week_end);
 
   const dateRange = formatDateRange(report.week_start, report.week_end);
 
@@ -56,6 +58,23 @@ export default async function WeeklyAnalysisPage({
             </div>
           </div>
         ))}
+
+        {charts.length > 0 && (
+          <div className={styles.card}>
+            <p className={styles.sectionLabel}>Data Visualization</p>
+            <div className={styles.chartsGrid}>
+              {charts.map((url) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={url}
+                  src={url}
+                  alt="Weekly trading chart"
+                  className={styles.chartImage}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

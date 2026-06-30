@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getLatestWeeklyAnalysis } from "@/lib/api";
+import { getLatestWeeklyAnalysis, getWeeklyCharts } from "@/lib/api";
 import styles from "./WeeklyAnalysisPreview.module.css";
 
 function stripMarkdown(text: string): string {
@@ -35,8 +35,11 @@ export default async function WeeklyAnalysisPreview() {
     );
   }
 
-  const excerpt = stripMarkdown(report.synopsis).slice(0, 160).trimEnd() + "…";
-  const dateRange = formatDateRange(report.week_start, report.week_end);
+  const [charts, excerpt, dateRange] = await Promise.all([
+    getWeeklyCharts(report.week_start, report.week_end),
+    Promise.resolve(stripMarkdown(report.synopsis).slice(0, 160).trimEnd() + "…"),
+    Promise.resolve(formatDateRange(report.week_start, report.week_end)),
+  ]);
 
   return (
     <section className={styles.container}>
@@ -45,9 +48,19 @@ export default async function WeeklyAnalysisPreview() {
         <p className={styles.dateRange}>{dateRange}</p>
         <p className={styles.tradeCount}>{report.trade_count} trades analyzed</p>
         <p className={styles.excerpt}>{excerpt}</p>
-        <div className={styles.vizPlaceholder}>
-          <p className={styles.vizPlaceholderText}>Data Visualization Coming Soon</p>
-        </div>
+        {charts.length > 0 && (
+          <div className={styles.chartStrip}>
+            {charts.map((url) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={url}
+                src={url}
+                alt="Weekly trading chart"
+                className={styles.chartThumb}
+              />
+            ))}
+          </div>
+        )}
         <p className={styles.cta}>Read full analysis →</p>
       </Link>
     </section>

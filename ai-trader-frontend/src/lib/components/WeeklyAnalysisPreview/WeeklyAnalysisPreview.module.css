@@ -95,6 +95,23 @@
   letter-spacing: 1px;
 }
 
+.chartStrip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  border-radius: 10px;
+  padding: 4px 0;
+}
+
+.chartThumb {
+  flex-shrink: 0;
+  width: 180px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 16px 16px 12px;

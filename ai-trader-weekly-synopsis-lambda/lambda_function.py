@@ -2,9 +2,10 @@ import json
 import logging
 import re
 
+from charts import generate_weekly_charts
 from config import FRONTEND_BASE_URL
 from dynamodb import get_current_playbook, store_current_playbook
-from storage import get_closed_trades_for_week, store_weekly_report
+from storage import get_all_trades_for_week, get_closed_trades_for_week, store_weekly_report
 from synopsis import generate_synopsis
 from utils import resolve_date_range
 from weekly_lesson import generate_weekly_lesson
@@ -22,6 +23,13 @@ def lambda_handler(event, context):
 
         trades = get_closed_trades_for_week(week_start, week_end)
         logger.info("Found %d closed trade(s) for the week", len(trades))
+
+        try:
+            trades_all = get_all_trades_for_week(week_start, week_end)
+            chart_keys = generate_weekly_charts(trades, trades_all, week_start, week_end)
+        except Exception:
+            logger.exception("Chart generation failed; continuing without charts")
+            chart_keys = []
 
         current_playbook = get_current_playbook()
         if current_playbook:
@@ -57,7 +65,12 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "body": json.dumps({"synopsis": synopsis, "weekly_lesson": weekly_lesson}),
+            "body": json.dumps({
+                "synopsis": synopsis,
+                "weekly_lesson": weekly_lesson,
+                "chart_count": len(chart_keys),
+                "chart_keys": chart_keys,
+            }),
         }
     except Exception:
         logger.exception("Error generating weekly synopsis")

@@ -48,8 +48,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Upload package to S3
+        run: |
+          aws s3 cp ${{ matrix.dir }}.zip s3://auto-ai-trader-charts/_deploy-artifacts/${{ matrix.dir }}.zip
+
       - name: Deploy to Lambda
         run: |
           aws lambda update-function-code \
             --function-name ${{ secrets[matrix.function_name_secret] }} \
-            --zip-file fileb://${{ matrix.dir }}.zip
+            --s3-bucket auto-ai-trader-charts \
+            --s3-key _deploy-artifacts/${{ matrix.dir }}.zip

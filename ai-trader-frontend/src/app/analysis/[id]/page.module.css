@@ -189,6 +189,21 @@
   margin: 16px 0;
 }
 
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.chartImage {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  display: block;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 32px 16px 48px;

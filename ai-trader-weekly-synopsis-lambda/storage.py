@@ -82,6 +82,35 @@ def store_weekly_report(
                 raise
 
 
+def get_all_trades_for_week(start_date: date, end_date: date) -> list[dict]:
+    global _conn
+    sql = """
+        SELECT *
+        FROM trade_decisions
+        WHERE timestamp >= %s
+          AND timestamp < %s
+        ORDER BY timestamp ASC
+    """
+    for attempt in range(2):
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            try:
+                cursor.execute(sql, (start_date.isoformat(), end_date.isoformat()))
+                cols = [d[0] for d in cursor.description]
+                rows = [dict(zip(cols, row)) for row in cursor.fetchall()]
+                logger.info("Fetched %d trade(s) (all statuses) for week %s–%s", len(rows), start_date, end_date)
+                return rows
+            finally:
+                cursor.close()
+        except Exception as e:
+            logger.error("DB error fetching all trades for week (attempt %d): %s", attempt + 1, e)
+            _conn = None
+            if attempt == 1:
+                raise
+    return []
+
+
 def get_closed_trades_for_week(start_date: date, end_date: date) -> list[dict]:
     global _conn
     sql = """
