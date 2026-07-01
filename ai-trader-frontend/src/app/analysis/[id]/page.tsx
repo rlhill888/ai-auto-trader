@@ -44,7 +44,7 @@ export default async function WeeklyAnalysisPage({
         </div>
 
         <div className={styles.header}>
-          <p className={styles.eyebrow}>Weekly Analysis Report</p>
+          <p className={styles.eyebrow}>Ai Weekly Analysis Report</p>
           <h1 className={styles.title}>{dateRange}</h1>
           <div className={styles.meta}>
             <span className={styles.badge}>{report.trade_count} trades analyzed</span>
