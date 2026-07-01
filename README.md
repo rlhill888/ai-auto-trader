@@ -25,7 +25,7 @@ RSS feed → polling-article-lambda → SQS queue → analysis-trading-lambda �
 2. **analysis-trading-lambda** consumes the queue, sends each article to an LLM for a structured trade decision (instrument, direction, confidence, stop loss/take profit in pips, recheck cadence), and if the model is confident enough, sizes the position against account risk (0.5% per trade) and places the order on OANDA. If a new signal contradicts an already-open position, it runs an early-exit evaluation and can flip the trade.
 3. **ai-trade-checker** runs on a schedule to reconcile open trades against OANDA's live state — marking trades closed/cancelled, detecting manual closes, generating a written lesson-learned for every closed trade, and triggering an AI "recheck" on still-open trades once their model-assigned recheck interval elapses (closing early if the AI thinks the thesis no longer holds).
 4. **reset-daily-ai-trading-values-lambda** runs nightly to snapshot the day's P&L/win-loss stats and reset the daily counters.
-5. **ai-trader-weekly-synopsis-lambda** runs weekly, summarizes the week's closed trades with an LLM, extracts lessons and best/worst-performing themes, and writes a new rules "playbook" that gets fed back into every future trading decision.
+5. **ai-trader-weekly-synopsis-lambda** runs weekly, summarizes the week's closed trades with an LLM, extracts lessons and best/worst-performing themes, and writes a new rules "playbook" that gets fed back into every future trading decision. It also generates up to 15 performance charts (using matplotlib) and uploads them to S3
 6. **ai-trader-frontend** is a Next.js dashboard showing account stats, open/closed trades, weekly synopses, and a live feed of trade and stats events pushed over Ably.
 
 ## Components
@@ -37,7 +37,7 @@ RSS feed → polling-article-lambda → SQS queue → analysis-trading-lambda �
 | `ai-trade-checker/` | Reconciles trade state with OANDA, lesson generation, periodic AI rechecks |
 | `reset-daily-ai-trading-values-lambda/` | Nightly daily-stats rollover |
 | `ai-trader-weekly-synopsis-lambda/` | Weekly performance synopsis and playbook generation |
-| `ai-trader-frontend/` | Next.js dashboard (trades, account summary, live updates) |
+| `ai-trader-frontend/` | Next.js dashboard (trades, account summary, live updates, chart carousel on weekly synopsis pages) |
 
 ## Stack
 
