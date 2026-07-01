@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getLatestWeeklyAnalysis, getWeeklyCharts } from "@/lib/api";
 import styles from "./WeeklyAnalysisPreview.module.css";
+import ChartCarousel from "./ChartCarousel";
 
 function stripMarkdown(text: string): string {
   return text
@@ -48,19 +49,7 @@ export default async function WeeklyAnalysisPreview() {
         <p className={styles.dateRange}>{dateRange}</p>
         <p className={styles.tradeCount}>{report.trade_count} trades analyzed</p>
         <p className={styles.excerpt}>{excerpt}</p>
-        {charts.length > 0 && (
-          <div className={styles.chartStrip}>
-            {charts.map((url) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={url}
-                src={url}
-                alt="Weekly trading chart"
-                className={styles.chartThumb}
-              />
-            ))}
-          </div>
-        )}
+        {charts.length > 0 && <ChartCarousel charts={charts} />}
         <p className={styles.cta}>Read full analysis →</p>
       </Link>
     </section>

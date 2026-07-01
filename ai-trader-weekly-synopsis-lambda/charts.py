@@ -26,6 +26,42 @@ NEUTRAL_COLOR = "#1f77b4"
 
 DURATION_RE = re.compile(r"(\d+)\s*(minute|hour|day)", re.IGNORECASE)
 
+CHART_TITLES = {
+    "01_cumulative_pl": "Cumulative P/L",
+    "02_pl_per_trade": "P/L Per Trade",
+    "03_win_rate_by_instrument": "Win Rate by Instrument",
+    "04_avg_pl_by_instrument": "Avg P/L by Instrument",
+    "05_avg_pl_by_direction": "Avg P/L by Direction",
+    "06_confidence_vs_pl": "Confidence vs P/L",
+    "07_win_rate_by_confidence_bucket": "Win Rate by Confidence Bucket",
+    "08_good_trade_vs_outcome": "Prediction vs Outcome",
+    "09_trade_count_by_hour": "Trade Count by Hour",
+    "10_avg_pl_by_hour": "Avg P/L by Hour",
+    "11_exit_timing_status": "Exit Timing",
+    "12_estimated_vs_actual_duration": "Estimated vs Actual Duration",
+    "13_trade_status_breakdown": "Trade Status Breakdown",
+    "14_early_exit_impact": "Early Exit Impact",
+    "15_units_vs_pl": "Units vs P/L",
+}
+
+CHART_DESCRIPTIONS = {
+    "01_cumulative_pl": "Cumulative P/L over time — shows the overall profit/loss trajectory across all closed trades for the week.",
+    "02_pl_per_trade": "P/L per trade — each bar is one trade (green = win, red = loss), ordered chronologically.",
+    "03_win_rate_by_instrument": "Win rate by instrument — percentage of winning trades for each traded symbol.",
+    "04_avg_pl_by_instrument": "Average P/L by instrument — mean profit or loss per trade for each symbol.",
+    "05_avg_pl_by_direction": "Average P/L by direction — compares mean P/L for long vs short trades.",
+    "06_confidence_vs_pl": "Confidence vs P/L — scatter plot showing whether higher AI confidence correlates with better outcomes.",
+    "07_win_rate_by_confidence_bucket": "Win rate by confidence bucket — win percentage grouped into 20-point confidence bands (0–100).",
+    "08_good_trade_vs_outcome": "Trade prediction vs outcome — 4-category breakdown of good/bad prediction vs win/loss result.",
+    "09_trade_count_by_hour": "Trade count by hour — how many trades were opened each hour of the day (UTC).",
+    "10_avg_pl_by_hour": "Average P/L by hour — mean profit/loss by hour of day, showing which times performed best.",
+    "11_exit_timing_status": "Exit timing — how many trades were exited early, on time, or late relative to the estimated end.",
+    "12_estimated_vs_actual_duration": "Estimated vs actual duration — compares the AI's predicted trade length to how long trades actually ran.",
+    "13_trade_status_breakdown": "Trade status breakdown — pie chart of all trade statuses (closed, open, cancelled, etc.).",
+    "14_early_exit_impact": "Early exit impact — average P/L for trades exited early vs trades held the full course.",
+    "15_units_vs_pl": "Units vs P/L — scatter plot showing whether position size (units) relates to profit or loss.",
+}
+
 
 def generate_weekly_charts(
     trades_closed: list[dict],
@@ -104,7 +140,13 @@ def _save_and_upload(fig, key: str) -> None:
     fig.savefig(buf, format="png", bbox_inches="tight", dpi=120)
     plt.close(fig)
     buf.seek(0)
-    s3.put_object(Bucket=S3_BUCKET, Key=key, Body=buf.getvalue(), ContentType="image/png")
+    chart_name = key.split("/")[-1].removesuffix(".png")
+    metadata: dict[str, str] = {}
+    if title := CHART_TITLES.get(chart_name):
+        metadata["title"] = title
+    if description := CHART_DESCRIPTIONS.get(chart_name):
+        metadata["description"] = description
+    s3.put_object(Bucket=S3_BUCKET, Key=key, Body=buf.getvalue(), ContentType="image/png", Metadata=metadata)
 
 
 def _new_fig():

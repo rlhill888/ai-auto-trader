@@ -196,12 +196,34 @@
   margin-top: 8px;
 }
 
+.chartFigure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .chartImage {
   width: 100%;
   height: auto;
   border-radius: 8px;
   border: 1px solid #e8e8e8;
   display: block;
+}
+
+.chartTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0a0a0a;
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+.chartCaption {
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+  line-height: 1.4;
 }
 
 @media (max-width: 768px) {

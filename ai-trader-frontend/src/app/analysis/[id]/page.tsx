@@ -63,14 +63,19 @@ export default async function WeeklyAnalysisPage({
           <div className={styles.card}>
             <p className={styles.sectionLabel}>Data Visualization</p>
             <div className={styles.chartsGrid}>
-              {charts.map((url) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={url}
-                  src={url}
-                  alt="Weekly trading chart"
-                  className={styles.chartImage}
-                />
+              {charts.map((chart) => (
+                <figure key={chart.url} className={styles.chartFigure}>
+                  {chart.title && <p className={styles.chartTitle}>{chart.title}</p>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={chart.url}
+                    alt={chart.title}
+                    className={styles.chartImage}
+                  />
+                  {chart.description && (
+                    <figcaption className={styles.chartCaption}>{chart.description}</figcaption>
+                  )}
+                </figure>
               ))}
             </div>
           </div>

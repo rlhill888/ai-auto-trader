@@ -1,4 +1,4 @@
-import { GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { GetObjectCommand, HeadObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
 import { s3 } from "@/lib/s3";
@@ -27,15 +27,25 @@ export async function GET(req: Request) {
       .filter(Boolean)
       .sort();
 
-    const urls = await Promise.all(
-      keys.map((key) =>
-        getSignedUrl(s3, new GetObjectCommand({ Bucket: BUCKET, Key: key }), {
-          expiresIn: PRESIGN_EXPIRES_SECONDS,
-        })
-      )
+    const charts = await Promise.all(
+      keys.map(async (key) => {
+        const rawName = key.split("/").pop()?.replace(".png", "") ?? "";
+        const [url, head] = await Promise.all([
+          getSignedUrl(s3, new GetObjectCommand({ Bucket: BUCKET, Key: key }), {
+            expiresIn: PRESIGN_EXPIRES_SECONDS,
+          }),
+          s3.send(new HeadObjectCommand({ Bucket: BUCKET, Key: key })),
+        ]);
+        const fallbackTitle = rawName.replace(/^\d+_/, "").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        return {
+          url,
+          title: head.Metadata?.title ?? fallbackTitle,
+          description: head.Metadata?.description ?? "",
+        };
+      })
     );
 
-    return NextResponse.json({ charts: urls });
+    return NextResponse.json({ charts });
   } catch (err) {
     console.error("Failed to list charts from S3:", err);
     return NextResponse.json({ charts: [] });
