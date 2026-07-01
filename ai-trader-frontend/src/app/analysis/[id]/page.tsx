@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { getWeeklyAnalysis, getWeeklyCharts } from "@/lib/api";
+import ChartCarousel from "./ChartCarousel";
 import styles from "./page.module.css";
 
 function formatDateRange(weekStart: string, weekEnd: string): string {
@@ -62,22 +63,7 @@ export default async function WeeklyAnalysisPage({
         {charts.length > 0 && (
           <div className={styles.card}>
             <p className={styles.sectionLabel}>Data Visualization</p>
-            <div className={styles.chartsGrid}>
-              {charts.map((chart) => (
-                <figure key={chart.url} className={styles.chartFigure}>
-                  {chart.title && <p className={styles.chartTitle}>{chart.title}</p>}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={chart.url}
-                    alt={chart.title}
-                    className={styles.chartImage}
-                  />
-                  {chart.description && (
-                    <figcaption className={styles.chartCaption}>{chart.description}</figcaption>
-                  )}
-                </figure>
-              ))}
-            </div>
+            <ChartCarousel charts={charts} />
           </div>
         )}
       </div>
