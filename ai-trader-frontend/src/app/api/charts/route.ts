@@ -39,8 +39,8 @@ export async function GET(req: Request) {
         const fallbackTitle = rawName.replace(/^\d+_/, "").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
         return {
           url,
-          title: head.Metadata?.title ?? fallbackTitle,
-          description: head.Metadata?.description ?? "",
+          title: head.Metadata?.title ? decodeURIComponent(head.Metadata.title) : fallbackTitle,
+          description: head.Metadata?.description ? decodeURIComponent(head.Metadata.description) : "",
         };
       })
     );

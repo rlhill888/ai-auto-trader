@@ -3,6 +3,7 @@ import logging
 import os
 import re
 from datetime import date, datetime
+from urllib.parse import quote
 
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/mplconfig")
 
@@ -143,9 +144,9 @@ def _save_and_upload(fig, key: str) -> None:
     chart_name = key.split("/")[-1].removesuffix(".png")
     metadata: dict[str, str] = {}
     if title := CHART_TITLES.get(chart_name):
-        metadata["title"] = title
+        metadata["title"] = quote(title)
     if description := CHART_DESCRIPTIONS.get(chart_name):
-        metadata["description"] = description
+        metadata["description"] = quote(description)
     s3.put_object(Bucket=S3_BUCKET, Key=key, Body=buf.getvalue(), ContentType="image/png", Metadata=metadata)
 
 
