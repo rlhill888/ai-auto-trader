@@ -106,6 +106,7 @@
 .carouselImgWrapper {
   overflow: hidden;
   border-radius: 10px;
+  aspect-ratio: 5 / 3;
 }
 
 .chartTitle {
@@ -135,7 +136,7 @@
 
 .carouselImg {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: contain;
   border-radius: 10px;
   border: 1px solid #e8e8e8;
