@@ -84,5 +84,13 @@
   .container {
     padding: 16px 16px 4px;
   }
+
+  .empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    padding-bottom: 12px;
+  }
 }
 
