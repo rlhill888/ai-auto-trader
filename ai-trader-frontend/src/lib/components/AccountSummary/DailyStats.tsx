@@ -22,10 +22,10 @@ export default function DailyStats({ initialStats }: { initialStats: DailyStats 
       <span className={styles.statsTotal}>
         {stats.tradesCompleted} trade{stats.tradesCompleted !== 1 ? "s" : ""} today
       </span>
-      <div className={styles.statsBreakdown}>
+      {/* <div className={styles.statsBreakdown}>
         <span className={styles.statsSucceeded}>{stats.succeeded} succeeded</span>
         <span className={styles.statsFailed}>{stats.failed} failed</span>
-      </div>
+      </div> */}
     </div>
   );
 }
